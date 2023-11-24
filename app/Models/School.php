@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class School extends Model
@@ -39,5 +40,13 @@ class School extends Model
             ->where('starts_at', '<=', now())
             ->limit(1); // Limit to one valid subscription
 
+    }
+
+    public function instructors(): HasMany{
+        return $this->hasMany(Instructor::class);
+    }
+
+    public function vehicles(): HasMany{
+        return $this->hasMany(Vehicle::class);
     }
 }

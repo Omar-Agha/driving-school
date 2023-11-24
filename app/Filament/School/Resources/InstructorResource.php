@@ -1,32 +1,30 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\School\Resources;
 
 use App\Enums\UserRoleEnum;
-use App\Filament\Resources\SchoolResource\Pages;
-use App\Filament\Resources\SchoolResource\Pages\EditSchool;
-use App\Models\School;
+use App\Filament\School\Resources\InstructorResource\Pages;
+use App\Filament\School\Resources\InstructorResource\Pages\EditInstructor;
+use App\Filament\School\Resources\InstructorResource\RelationManagers;
+use App\Models\Instructor;
 use Filament\Forms;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\CheckboxColumn;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Phpsa\FilamentPasswordReveal\Password;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class SchoolResource extends Resource
+class InstructorResource extends Resource
 {
-    protected static ?string $model = School::class;
+    protected static ?string $model = Instructor::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-    protected static ?string $recordTitleAttribute = 'school_name';
 
     public static function form(Form $form): Form
     {
@@ -34,13 +32,16 @@ class SchoolResource extends Resource
             ->schema([
                 Grid::make(12)->schema([
                     Card::make(__("dashboard.essential_data"))->schema([
+                        Hidden::make("school_id")->default(auth()->user()->school->id),
                         Forms\Components\FileUpload::make('avatar')
                             ->required()
                             ->image()
                             ->avatar(),
-                        Forms\Components\TextInput::make('school_name')
+                        Forms\Components\TextInput::make('name')
                             ->required()
-                            ->maxLength(255)
+                            ->maxLength(255),
+                        Forms\Components\DatePicker::make('date_of_birth')
+                            ->required(),
 
                     ])->columnSpan(7),
                     Card::make(__("dashboard.credential_data"))
@@ -48,36 +49,35 @@ class SchoolResource extends Resource
                         ->schema([
 
                             Forms\Components\Hidden::make('role')
-                                ->default(UserRoleEnum::SCHOOL),
+                                ->default(UserRoleEnum::INSTRUCTOR),
 
                             Forms\Components\TextInput::make('email')
                                 ->required()
                                 ->unique()
                                 ->email()
-                                ->readOnlyOn(EditSchool::class),
+                                ->readOnlyOn(EditInstructor::class),
 
 
                             Forms\Components\TextInput::make('username')
                                 ->required()
                                 ->unique()
                                 ->maxLength(255)
-                                ->readOnlyOn(EditSchool::class),
+                                ->readOnlyOn(EditInstructor::class),
 
                             Password::make('password')
                                 ->required()
                                 ->password()
-                                ->hiddenOn(EditSchool::class)
+                                ->hiddenOn(EditInstructor::class)
                             ,
                             Password::make('password_confirmation')
                                 ->required()
                                 ->password()
                                 ->same('password')
-                                ->hiddenOn(EditSchool::class)
+                                ->hiddenOn(EditInstructor::class)
 
                         ])
                         ->columnSpan(5)
                 ])
-
             ]);
     }
 
@@ -85,6 +85,7 @@ class SchoolResource extends Resource
     {
         return $table
             ->columns([
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -93,32 +94,20 @@ class SchoolResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\ImageColumn::make('logo'),
-                Tables\Columns\TextColumn::make('school_name')
-                    ->searchable(isIndividual: true),
-                TextColumn::make('active_package_exists')->exists('activePackage')
-                    ->badge()
-                    ->color(fn(School $record): string => match ($record->activePackage()->exists()) {
-                        true => "success",
-                        false => "danger",
-
-                    })
-                    ->label("Subscription")
-                    ->state(fn(School $record): string => match ($record->activePackage()->exists()) {
-                        true => "Subscriped",
-                        false => "Not Subscriped",
-                    })
-                    ->tooltip(fn(School $record): string => $record->activePackage()->exists() ? $record->activePackage->first()->title : "")
-
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
+                Tables\Columns\ImageColumn::make('avatar')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('date_of_birth')
+                    ->date()
+                    ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
-
-                // Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -126,8 +115,6 @@ class SchoolResource extends Resource
                 ]),
             ]);
     }
-
-
 
     public static function getRelations(): array
     {
@@ -139,11 +126,10 @@ class SchoolResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSchools::route('/'),
-            'create' => Pages\CreateSchool::route('/create'),
-            'edit' => Pages\EditSchool::route('/{record}/edit'),
-            'view' => Pages\ViewSchool::route('/{record}'),
-
+            'index' => Pages\ListInstructors::route('/'),
+            'create' => Pages\CreateInstructor::route('/create'),
+            'view' => Pages\ViewInstructor::route('/{record}'),
+            'edit' => Pages\EditInstructor::route('/{record}/edit'),
         ];
     }
 }

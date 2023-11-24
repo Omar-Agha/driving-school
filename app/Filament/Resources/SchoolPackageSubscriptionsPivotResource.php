@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Consts\ConfigurationConsts;
 use App\Filament\Resources\SchoolPackageSubscriptionsPivotResource\Pages;
 use App\Filament\Resources\SchoolPackageSubscriptionsPivotResource\RelationManagers;
 use App\Filament\Resources\SchoolResource\Pages\ViewSchool;
@@ -10,6 +11,8 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\Summarizers\Average;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -71,8 +74,9 @@ class SchoolPackageSubscriptionsPivotResource extends Resource
 
 
                 Tables\Columns\TextColumn::make('cost')
-                    ->money()
-                    ->sortable(),
+                    ->money(ConfigurationConsts::MAIN_CURRENCY)
+                    ->sortable()
+                    ->summarize(Sum::make()->money(ConfigurationConsts::MAIN_CURRENCY)),
 
                 Tables\Columns\TextColumn::make('status')
                     ->badge()

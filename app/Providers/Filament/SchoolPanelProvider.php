@@ -2,20 +2,14 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Resources\CourseResource;
-use App\Http\Middleware\Cors;
-use App\Http\Middleware\FilVerifyIsAdmin;
+use App\Filament\Pages\SchedulePage;
+use App\Http\Middleware\FilVerifyIsSchool;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\NavigationBuilder;
-use Filament\Navigation\NavigationGroup;
-use Filament\Navigation\NavigationItem;
 use Filament\Pages;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Assets\Theme;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -27,19 +21,17 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
 
-class AdminPanelProvider extends PanelProvider
+class SchoolPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->default()
-            ->id('admin')
-            ->path('admin')
+            ->id('school')
+            ->path('school')
             ->login()
-            ->sidebarCollapsibleOnDesktop()
-
+            ->profile()
             ->colors([
-                // 'primary' => Color::Amber,
+                'primary' => Color::Amber,
 
                 'danger' => Color::Red,
                 'gray' => Color::Slate,
@@ -47,19 +39,17 @@ class AdminPanelProvider extends PanelProvider
                 'success' => Color::Emerald,
                 'warning' => Color::Orange,
             ])
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-
-
+            ->discoverResources(in: app_path('Filament/School/Resources'), for: 'App\\Filament\\School\\Resources')
+            ->discoverPages(in: app_path('Filament/School/Pages'), for: 'App\\Filament\\School\\Pages')
             ->pages([
                 Pages\Dashboard::class,
+                SchedulePage::class
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->discoverWidgets(in: app_path('Filament/School/Widgets'), for: 'App\\Filament\\School\\Widgets')
             ->widgets([
                 // Widgets\AccountWidget::class,
-
+                // Widgets\FilamentInfoWidget::class,
             ])
-
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -72,8 +62,8 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->authMiddleware([
-                // FilVerifyIsAdmin::class,
                 Authenticate::class,
+                // FilVerifyIsSchool::class
             ])
             ->plugin(
                 FilamentFullCalendarPlugin::make()
@@ -85,9 +75,12 @@ class AdminPanelProvider extends PanelProvider
                     ->plugins([
                         'dayGrid',
                         'timeGrid',
-                        // 'dayGridDay'
+                        'interaction',
+                        'list'
                     ])
                     ->config([])
             );
+
+
     }
 }

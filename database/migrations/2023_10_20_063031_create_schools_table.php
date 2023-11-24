@@ -20,8 +20,7 @@ return new class extends Migration {
                 ->nullable()
                 ->constrained()
                 ->cascadeOnDelete()
-                ->cascadeOnUpdate()
-            ;
+                ->cascadeOnUpdate();
 
         });
     }

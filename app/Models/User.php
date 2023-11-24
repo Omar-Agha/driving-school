@@ -75,4 +75,13 @@ class User extends Authenticatable implements HasName
         }
         return null;
     }
+
+    public function isAdmin(): bool{
+        return $this->role->isAdmin();
+    }
+
+    public function isSchool(): bool
+    {
+        return $this->role->isSchool();
+    }
 }

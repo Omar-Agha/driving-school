@@ -46,7 +46,7 @@ class SchedulePage extends Page
             // StatsOverviewWidget::class
         ];
     }
-    
+
 
     protected function getFooterWidgets(): array
     {

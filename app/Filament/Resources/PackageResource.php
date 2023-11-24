@@ -2,11 +2,13 @@
 
 namespace App\Filament\Resources;
 
+use App\Consts\ConfigurationConsts;
 use App\Filament\Resources\PackageResource\Pages;
 use App\Filament\Resources\PackageResource\RelationManagers;
 use App\Models\Package;
 use App\Models\School;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -22,29 +24,33 @@ class PackageResource extends Resource
     protected static ?string $model = Package::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
+    protected static ?string $recordTitleAttribute = 'title';
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\FileUpload::make('image')
-                    ->image()
-                    ->required(),
-                Forms\Components\TextInput::make('title')
-                    ->required()
-                    ->maxLength(100),
-                Forms\Components\Textarea::make('description')
-                    ->required()
-                    ->maxLength(65535)
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('price')
-                    ->required()
-                    ->numeric()
-                    ->prefix('$'),
-                Forms\Components\TextInput::make('duration')
-                    ->required()
-                    ->numeric()
-                    ->prefix("months"),
+                Section::make('')->schema([
+                    Forms\Components\FileUpload::make('image')
+                        ->image()
+                        ->required()
+                        ->columnSpanFull(),
+                    Forms\Components\TextInput::make('title')
+                        ->required()
+                        ->maxLength(100)
+                        ->columnSpanFull(),
+                    Forms\Components\Textarea::make('description')
+                        ->required()
+                        ->maxLength(65535)
+                        ->columnSpanFull(),
+                    Forms\Components\TextInput::make('price')
+                        ->required()
+                        ->numeric()
+                        ->prefix(ConfigurationConsts::MAIN_CURRENCY_SYMBOL),
+                    Forms\Components\TextInput::make('duration')
+                        ->required()
+                        ->numeric()
+                        ->prefix("months"),
+                ])->columns(2)
             ]);
     }
 
@@ -65,7 +71,7 @@ class PackageResource extends Resource
                 Tables\Columns\TextColumn::make('title')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('price')
-                    ->money()
+                    ->money(ConfigurationConsts::MAIN_CURRENCY)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('duration')
                     ->numeric()
@@ -87,10 +93,10 @@ class PackageResource extends Resource
                     ->button()
                     ->action(function (array $data, Package $record) {
                         $school_id = $data['school_id'];
-                        $subscription_data= [
-                            'cost'=>$record->price,
-                            'duration'=>$record->duration,
-                            'expires_at'=>now()->addMonths($record->duration),
+                        $subscription_data = [
+                            'cost' => $record->price,
+                            'duration' => $record->duration,
+                            'expires_at' => now()->addMonths($record->duration),
                         ];
                         $record->schools()->attach($school_id, $subscription_data);
                         Notification::make()

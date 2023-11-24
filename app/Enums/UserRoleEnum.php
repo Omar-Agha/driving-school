@@ -7,7 +7,9 @@ enum UserRoleEnum: string
     case ADMIN = 'admin';
     case STUDENT = 'student';
     case SCHOOL = 'school';
-    case TEACHER = 'techer';
+    case INSTRUCTOR = 'instructor';
+
+
 
     public function isAdmin(): bool
     {
@@ -19,9 +21,9 @@ enum UserRoleEnum: string
         return $this == self::SCHOOL;
     }
 
-    public function isTeacher(): bool
+    public function isInstructor(): bool
     {
-        return $this == self::TEACHER;
+        return $this == self::INSTRUCTOR;
     }
 
     public function isStudent(): bool
@@ -30,9 +32,10 @@ enum UserRoleEnum: string
     }
 
 
-    public static function toArray(){
-        return array_column(static::cases(),'value');
+    public static function toArray()
+    {
+        return array_column(static::cases(), 'value');
     }
 
-   
+
 }

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Consts\DashboardNavigationGroups;
 use App\Filament\Resources\VideoResource\Pages;
 use App\Filament\Resources\VideoResource\RelationManagers;
 use App\Helpers\YoutubeURLHelper;
@@ -19,6 +20,9 @@ class VideoResource extends Resource
     protected static ?string $model = Video::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = DashboardNavigationGroups::GENERAL;
+
+
 
     public static function form(Form $form): Form
     {
@@ -26,7 +30,7 @@ class VideoResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('url')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)->columnSpanFull(),
             ]);
     }
 

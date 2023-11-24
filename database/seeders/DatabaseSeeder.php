@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Enums\UserRoleEnum;
+use App\Models\School;
 use App\Models\User;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Seeder;
@@ -25,6 +26,19 @@ class DatabaseSeeder extends Seeder
                 'password'=>"123456789",
                 'remember_token'=>Str::random(10),
                 'role'=>UserRoleEnum::ADMIN
+            ]);
+
+            $user = User::create([
+                'email' => "omar@gg.com",
+                'username' => "omar School",
+                'password' => "123123",
+                'remember_token' => Str::random(10),
+                'role' => UserRoleEnum::SCHOOL
+            ]);
+            School::create([
+                'avatar'=>'image1.png',
+                'school_name'=>'omar School',
+                'user_id'=>$user->id
             ]);
         }
         // \App\Models\User::factory()->create([

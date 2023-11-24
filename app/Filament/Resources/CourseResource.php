@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Consts\DashboardNavigationGroups;
 use App\Filament\Resources\CourseResource\Pages;
 use App\Filament\Resources\CourseResource\RelationManagers;
 use App\Models\Course;
@@ -20,7 +21,8 @@ class CourseResource extends Resource
     protected static ?string $model = Course::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
+    protected static ?string $navigationGroup = DashboardNavigationGroups::GENERAL;
+    protected static ?string $recordTitleAttribute = 'title';
     public static function form(Form $form): Form
     {
         return $form

@@ -37,22 +37,15 @@ Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
 });
 
-Route::get("video", [VideoController::class,"index"])->name("video.index");
+Route::get("video", [VideoController::class, "index"])->name("video.index");
 Route::get("course", [CourseController::class, "index"])->name("course.index");
 
 
 Route::get("test", function () {
 
-    $lala = School::doesntHave("activePackage")->with("activePackage")->get();
-
-    return School::all();
-    // $lala = School::whereHas("packages")->with("packages")->get();
-
-
-
-    return $lala;
-    return 'jjj';
-    return UserRoleEnum::toArray();
+    $s = School::find(1);
+    $s->loadCount('instructors', 'vehicles');
+    return $s->vehicles_count;
     // return EventData::make()
     //     ->id(1)
     //     ->start(Carbon::now())
