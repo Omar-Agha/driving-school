@@ -46,7 +46,7 @@ class StudentController extends Controller
     {
         /** @var Student */
         $student = auth()->user()->student;
-        // return DefaultResource::make($student->appointments);
+        return DefaultResource::make($student->appointments);
     }
 
     public function getStudentAppointment(Event $appointment)
