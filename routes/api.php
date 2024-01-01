@@ -63,6 +63,7 @@ Route::prefix('student')->middleware('auth:sanctum')->group(function () {
 
 
 Route::get("test", function () {
+    return 'jj';
     return Event::all();
     return;
 });
