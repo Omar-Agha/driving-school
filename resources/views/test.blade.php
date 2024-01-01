@@ -1,144 +1,28 @@
-!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-    <title>How to Use Fullcalendar in Laravel 8</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>gg</title>
 
-    <meta name="csrf-token" content="{{ csrf_token() }}" />
+    @vite('resources/js/app.js')
+    @vite('resources/css/app.css')
 
-
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.js"></script>
 </head>
 
 <body>
+    <h1 class="bg-red-400">lsdfjlk</h1>
 
-    <div class="container">
-        <br />
-        <h1 class="text-center text-primary"><u>How to Use Fullcalendar in Laravel 8</u></h1>
-        <br />
-
-        <div id="calendar"></div>
-
+    <div class="relative mb-3" data-te-datepicker-init data-te-input-wrapper-init>
+        <input type="text"
+            class="peer block min-h-[auto] w-full rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-primary data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:peer-focus:text-primary [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
+            placeholder="Select a date" />
+        <label for="floatingInput"
+            class="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary">Select
+            a date</label>
     </div>
-
-    <script>
-    $(document).ready(function() {
-
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-
-        var calendar = $('#calendar').fullCalendar({
-            plugins: ['dayGrid'],
-            // defaultView: 'dayGridDay',
-            dayHeaderContent: function(arg) {
-                return `<div class="custom-day-header">${arg.dayNumberText}</div>`;
-            },
-            editable: true,
-            header: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'agendaWeek,agendaDay'
-            },
-            events: '/full-calender',
-            selectable: true,
-            selectHelper: true,
-            select: function(start, end, allDay) {
-                var title = prompt('Event Title:');
-
-                if (title) {
-                    var start = $.fullCalendar.formatDate(start, 'Y-MM-DD HH:mm:ss');
-
-                    var end = $.fullCalendar.formatDate(end, 'Y-MM-DD HH:mm:ss');
-
-                    $.ajax({
-                        url: "/full-calender/action",
-                        type: "POST",
-                        data: {
-                            name: title,
-                            start: start,
-                            end: end,
-                            type: 'add'
-                        },
-                        success: function(data) {
-                            calendar.fullCalendar('refetchEvents');
-                            alert("Event Created Successfully");
-                        }
-                    })
-                }
-            },
-            editable: true,
-            eventResize: function(event, delta) {
-                var start = $.fullCalendar.formatDate(event.start, 'Y-MM-DD HH:mm:ss');
-                var end = $.fullCalendar.formatDate(event.end, 'Y-MM-DD HH:mm:ss');
-                var title = event.title;
-                var id = event.id;
-                $.ajax({
-                    url: "/full-calender/action",
-                    type: "POST",
-                    data: {
-                        name: title,
-                        start: start,
-                        end: end,
-                        id: id,
-                        type: 'update'
-                    },
-                    success: function(response) {
-                        calendar.fullCalendar('refetchEvents');
-                        alert("Event Updated Successfully");
-                    }
-                })
-            },
-            eventDrop: function(event, delta) {
-                var start = $.fullCalendar.formatDate(event.start, 'Y-MM-DD HH:mm:ss');
-                var end = $.fullCalendar.formatDate(event.end, 'Y-MM-DD HH:mm:ss');
-                var title = event.title;
-                var id = event.id;
-                $.ajax({
-                    url: "/full-calender/action",
-                    type: "POST",
-                    data: {
-                        name: title,
-                        start: start,
-                        end: end,
-                        id: id,
-                        type: 'update'
-                    },
-                    success: function(response) {
-                        calendar.fullCalendar('refetchEvents');
-                        alert("Event Updated Successfully");
-                    }
-                })
-            },
-
-            eventClick: function(event) {
-                if (confirm("Are you sure you want to remove it?")) {
-                    var id = event.id;
-                    $.ajax({
-                        url: "/full-calender/action",
-                        type: "POST",
-                        data: {
-                            id: id,
-                            type: "delete"
-                        },
-                        success: function(response) {
-                            calendar.fullCalendar('refetchEvents');
-                            alert("Event Deleted Successfully");
-                        }
-                    })
-                }
-            }
-        });
-
-    });
-    </script>
-
 </body>
 
 </html>

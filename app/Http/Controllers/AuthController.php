@@ -15,6 +15,9 @@ use Auth;
 use Illuminate\Support\Facades\DB;
 
 use App\Http\Requests\StudentRequest;
+use App\Http\Resources\ConfigurationResource;
+use App\Models\Instructor;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -44,7 +47,6 @@ class AuthController extends Controller
             'email' => $user->email
         ];
         return DefaultResource::make($response);
-
     }
 
 
@@ -55,13 +57,23 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (!Auth::attempt(request()->all()))
+        if (!auth()->attempt(request()->all()))
             throw ValidationException::withMessages(['credential' => 'invalid email/password']);
 
-            
+
         /** @var User */
-        $user = Auth::user();
+        $user = auth()->user();
         $token = $user->createToken(AuthConsts::LOGIN_TOKEN_NAME)->plainTextToken;
-        return new LoginResource($user,$token);
+
+        return ConfigurationResource::make($user, $token);
+    }
+
+    public function accountConfiguration()
+    {
+        
+        /** @var User */
+        $user = auth()->user();
+
+        return new ConfigurationResource($user);
     }
 }

@@ -3,17 +3,23 @@
 use App\Enums\UserRoleEnum;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\SchoolController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\VideoController;
 use App\Http\Requests\StudentRequest;
 use App\Models\Event;
 use App\Models\School;
 use App\Models\SchoolPackageSubscriptionsPivot;
+use App\Models\Student;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Benchmark;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Saade\FilamentFullCalendar\Data\EventData;
+use Illuminate\Support\Number;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,40 +41,28 @@ Route::prefix('auth')->group(function () {
     Route::post('student/register', [AuthController::class, 'registerStudent']);
 
     Route::post('login', [AuthController::class, 'login']);
+    Route::get('account-configuration', [AuthController::class, 'accountConfiguration'])->middleware('auth:sanctum');
 });
 
 Route::get("video", [VideoController::class, "index"])->name("video.index");
 Route::get("course", [CourseController::class, "index"])->name("course.index");
 
+Route::prefix('school')->middleware('auth:api')->group(function () {
+    Route::post("accept-student-request/{request}", [SchoolController::class, "acceptStudentRequest"])->name("school.accept-student-request");
+    Route::post("refuse-student-request/{request}", [SchoolController::class, "refuseStudentRequest"])->name("school.refuse-student-request");
+});
+
+
+Route::prefix('student')->middleware('auth:sanctum')->group(function () {
+    Route::post("request-join-school", [StudentController::class, "requestJoinSchool"])->name("student.request-join-school")->middleware('role:student');
+    Route::get("request-join-school", [StudentController::class, "getJoinSchoolRequests"])->name("student.get-request-join-school")->middleware('role:student');
+    Route::get("appointments", [StudentController::class, "getStudentAppointments"])->name("student.get-student-appointments")->middleware('role:student');
+    Route::get("appointments/{appointment}", [StudentController::class, "getStudentAppointment"])->name("student.get-student-appointments")->middleware('role:student');
+});
+
+
 
 Route::get("test", function () {
-
-    $s = School::find(1);
-    $s->loadCount('instructors', 'vehicles');
-    return $s->vehicles_count;
-    // return EventData::make()
-    //     ->id(1)
-    //     ->start(Carbon::now())
-    //     ->title("jjsfd");
-    return Event::query()
-        ->where('starts_at', '>=', Carbon::now()->subYear())
-        ->where('ends_at', '<=', Carbon::now()->addYear())
-        ->get()
-        ->map(
-            fn(Event $event) =>
-            [
-                'title' => $event->id,
-                'start' => $event->starts_at,
-                'end' => $event->ends_at,
-                // 'url' => EventResource::getUrl(name: 'view', parameters: ['record' => $event]),
-                'shouldOpenUrlInNewTab' => true
-            ]
-            // EventData::make()
-            //     ->id(1)
-            //     ->title("jj")
-            //     ->start(Carbon::now())
-            //     // ->end(Carbon::now())
-
-        )
-        ->all();
+    return Event::all();
+    return;
 });

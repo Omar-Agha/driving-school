@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Enums\UserRoleEnum;
+use App\Helpers\Utilities;
 use App\Models\School;
 use App\Models\User;
 use Database\Factories\UserFactory;
@@ -19,13 +20,13 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
-        if(User::count()==0){
+        if (User::count() == 0) {
             User::create([
-                'email'=>"admin@admin.com",
-                'username'=>"adminUsername",
-                'password'=>"123456789",
-                'remember_token'=>Str::random(10),
-                'role'=>UserRoleEnum::ADMIN
+                'email' => "admin@admin.com",
+                'username' => "adminUsername",
+                'password' => "123456789",
+                'remember_token' => Str::random(10),
+                'role' => UserRoleEnum::ADMIN
             ]);
 
             $user = User::create([
@@ -36,9 +37,10 @@ class DatabaseSeeder extends Seeder
                 'role' => UserRoleEnum::SCHOOL
             ]);
             School::create([
-                'avatar'=>'image1.png',
-                'school_name'=>'omar School',
-                'user_id'=>$user->id
+                'avatar' => 'image1.png',
+                'school_name' => 'omar School',
+                'user_id' => $user->id,
+                'code' => Utilities::generateRandomCode()
             ]);
         }
         // \App\Models\User::factory()->create([

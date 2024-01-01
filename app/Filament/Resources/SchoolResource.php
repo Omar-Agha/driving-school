@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\UserRoleEnum;
 use App\Filament\Resources\SchoolResource\Pages;
 use App\Filament\Resources\SchoolResource\Pages\EditSchool;
+use App\Helpers\Utilities;
 use App\Models\School;
 use Filament\Forms;
 use Filament\Forms\Components\Card;
@@ -40,7 +41,11 @@ class SchoolResource extends Resource
                             ->avatar(),
                         Forms\Components\TextInput::make('school_name')
                             ->required()
-                            ->maxLength(255)
+                            ->maxLength(255),
+
+                        Forms\Components\Hidden::make('code')
+                            ->default(Utilities::generateRandomCode())
+                            ->hiddenOn(EditSchool::class),
 
                     ])->columnSpan(7),
                     Card::make(__("dashboard.credential_data"))
@@ -49,6 +54,10 @@ class SchoolResource extends Resource
 
                             Forms\Components\Hidden::make('role')
                                 ->default(UserRoleEnum::SCHOOL),
+
+
+
+
 
                             Forms\Components\TextInput::make('email')
                                 ->required()
@@ -66,8 +75,7 @@ class SchoolResource extends Resource
                             Password::make('password')
                                 ->required()
                                 ->password()
-                                ->hiddenOn(EditSchool::class)
-                            ,
+                                ->hiddenOn(EditSchool::class),
                             Password::make('password_confirmation')
                                 ->required()
                                 ->password()
@@ -76,6 +84,7 @@ class SchoolResource extends Resource
 
                         ])
                         ->columnSpan(5)
+                        ->hiddenOn(EditSchool::class)
                 ])
 
             ]);
@@ -93,22 +102,21 @@ class SchoolResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\ImageColumn::make('logo'),
+                Tables\Columns\ImageColumn::make('avatar'),
                 Tables\Columns\TextColumn::make('school_name')
                     ->searchable(isIndividual: true),
                 TextColumn::make('active_package_exists')->exists('activePackage')
                     ->badge()
-                    ->color(fn(School $record): string => match ($record->activePackage()->exists()) {
+                    ->color(fn (School $record): string => match ($record->activePackage()->exists()) {
                         true => "success",
                         false => "danger",
-
                     })
                     ->label("Subscription")
-                    ->state(fn(School $record): string => match ($record->activePackage()->exists()) {
+                    ->state(fn (School $record): string => match ($record->activePackage()->exists()) {
                         true => "Subscriped",
                         false => "Not Subscriped",
                     })
-                    ->tooltip(fn(School $record): string => $record->activePackage()->exists() ? $record->activePackage->first()->title : "")
+                    ->tooltip(fn (School $record): string => $record->activePackage()->exists() ? $record->activePackage->first()->title : "")
 
             ])
             ->filters([

@@ -36,6 +36,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->darkMode(false)
             ->sidebarCollapsibleOnDesktop()
 
             ->colors([
@@ -72,7 +73,7 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->authMiddleware([
-                // FilVerifyIsAdmin::class,
+                FilVerifyIsAdmin::class,
                 Authenticate::class,
             ])
             ->plugin(

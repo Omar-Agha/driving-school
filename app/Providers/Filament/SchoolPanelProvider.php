@@ -30,6 +30,9 @@ class SchoolPanelProvider extends PanelProvider
             ->path('school')
             ->login()
             ->profile()
+            ->darkMode(false)
+            ->sidebarFullyCollapsibleOnDesktop()
+            ->viteTheme(['resources/css/filament/school/theme.css', 'resources/js/app.js'])
             ->colors([
                 'primary' => Color::Amber,
 
@@ -63,7 +66,7 @@ class SchoolPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-                // FilVerifyIsSchool::class
+                FilVerifyIsSchool::class
             ])
             ->plugin(
                 FilamentFullCalendarPlugin::make()
@@ -80,7 +83,5 @@ class SchoolPanelProvider extends PanelProvider
                     ])
                     ->config([])
             );
-
-
     }
 }

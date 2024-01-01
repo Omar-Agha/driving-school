@@ -57,7 +57,8 @@ class User extends Authenticatable implements HasName
         return "{$this->username}";
     }
 
-    public function school(): HasOne{
+    public function school(): HasOne
+    {
         return $this->hasOne(School::class);
     }
 
@@ -66,8 +67,14 @@ class User extends Authenticatable implements HasName
         return $this->hasOne(Student::class);
     }
 
-    public function getAvatarAttribute(): ?string{
-        if($this->role->isStudent()){
+    public function instructor(): HasOne
+    {
+        return $this->hasOne(Instructor::class);
+    }
+
+    public function getAvatarAttribute(): ?string
+    {
+        if ($this->role->isStudent()) {
             return $this->student->avatar;
         }
         if ($this->role->isSchool()) {
@@ -76,12 +83,54 @@ class User extends Authenticatable implements HasName
         return null;
     }
 
-    public function isAdmin(): bool{
+    public function isAdmin(): bool
+    {
         return $this->role->isAdmin();
     }
 
     public function isSchool(): bool
     {
         return $this->role->isSchool();
+    }
+
+    public function isInstructor(): bool
+    {
+        return $this->role->isInstructor();
+    }
+
+    public function isStudent(): bool
+    {
+        return $this->role->isStudent();
+    }
+
+    public function hasRole(string $role): bool
+    {
+        if ($role == 'admin') return $this->isAdmin();
+        if ($role == 'instructor' || $role == 'teacher') return $this->isInstructor();
+        if ($role == 'school') return $this->isSchool();
+        if ($role == 'student') return $this->isStudent();
+
+        return false;
+    }
+
+    public function suspend()
+    {
+        $this->is_suspended = true;
+        $this->save();
+    }
+
+    public function unsuspend()
+    {
+        $this->is_suspended = false;
+        $this->save();
+    }
+
+    public function getAvatar()
+    {
+        if ($this->isStudent())
+            return $this->student->avatar_url;
+
+        if ($this->isInstructor())
+            return $this->instructor->avatar_url;
     }
 }

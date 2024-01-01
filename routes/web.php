@@ -4,6 +4,7 @@ use App\Models\Event;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,26 +21,25 @@ Route::get('/', function () {
     return redirect()->route('filament.admin.pages.dashboard');
 });
 
-Route::get('/full-calender', function (Request $request) {
+Route::get('/test', function (Request $request) {
     if (request()->ajax()) {
         $data = Event::whereDate('start', '>=', request('start'))
             ->whereDate('end', '<=', request('end'))
             ->get(['id', 'name', 'start', 'end']);
         return response()->json($data);
     }
-    return view('test3');
+    return view('test');
 });
 
 Route::get('/api-full-calender', function (Request $request) {
 
 
 
+    // return Event::all();
     $data = Event::query()
         ->whereDate('start', '>=', request()->date('startStr'))
         ->whereDate('end', '<=', request()->date('endStr'))
-        // ->whereDate('start', '>=', Carbon::create(2023, 10, 1))
-        // ->whereDate('end', '<=', Carbon::create(2023, 12, 10))
-
+        ->with(['student', 'instructor', 'vehicle', 'lesson'])
         ->get()
         ->map(
             fn (Event $event) =>
@@ -49,7 +49,17 @@ Route::get('/api-full-calender', function (Request $request) {
                 'start' => $event->start,
                 'end' => $event->end,
                 // 'url' => EventResource::getUrl(name: 'view', parameters: ['record' => $event]),
-                'shouldOpenUrlInNewTab' => true
+                'shouldOpenUrlInNewTab' => true,
+
+
+                'instructor_id' => $event->instructor_id,
+                'student_id' => $event->student_id,
+                'vehicle_id' => $event->vehicle_id,
+                'school_lesson_id' => $event->school_lesson_id,
+                "student_name" => Str::replaceArray('?', [$event->student->first_name, $event->student->last_name], "? ?"),
+                'instructor_name' => $event->instructor->name,
+                'vehicle_name' => $event->vehicle->number_plate,
+                'lesson_name' => $event->lesson->title
             ]
         )
         ->all();

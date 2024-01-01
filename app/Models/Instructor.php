@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\FileHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +14,14 @@ class Instructor extends Model
 
 
     protected $fillable = ['name', 'date_of_birth', 'avatar','school_id'];
+    protected $appends = ['avatar_url'];
 
+
+
+    public function getAvatarUrlAttribute($value)
+    {
+        return FileHelper::getFileUrl($this->avatar);
+    }
 
     public function user(): BelongsTo
     {

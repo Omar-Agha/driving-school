@@ -2,13 +2,10 @@
 
 namespace App\Filament\School\Resources;
 
-use App\Filament\School\Resources\VehicleResource\Pages;
-use App\Filament\School\Resources\VehicleResource\RelationManagers;
-use App\Models\Vehicle;
-use DateTime;
+use App\Filament\School\Resources\SchoolLessonResource\Pages;
+use App\Filament\School\Resources\SchoolLessonResource\RelationManagers;
+use App\Models\SchoolLesson;
 use Filament\Forms;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -16,9 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class VehicleResource extends Resource
+class SchoolLessonResource extends Resource
 {
-    protected static ?string $model = Vehicle::class;
+    protected static ?string $model = SchoolLesson::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -26,13 +23,20 @@ class VehicleResource extends Resource
     {
         return $form
             ->schema([
-
-                Forms\Components\Hidden::make('school_id')->default(auth()->user()->school->id),
-
-                Forms\Components\TextInput::make('number_plate')
+                Forms\Components\Hidden::make('school_id')
+                    ->default(auth()->user()->school->id)
+                    ->required(),
+                Forms\Components\TextInput::make('title')
                     ->required()
-                    ->maxLength(100)
-                    ->unique(),
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('price')
+                    ->required()
+                    ->numeric()
+                    ->prefix('$'),
+                Forms\Components\Textarea::make('description')
+                    ->required()
+                    ->maxLength(65535)
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -40,9 +44,7 @@ class VehicleResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('school_id')
-                    ->numeric()
-                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -51,14 +53,16 @@ class VehicleResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('number_plate')
+                Tables\Columns\TextColumn::make('title')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('price')
+                    ->money()
+                    ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -78,10 +82,17 @@ class VehicleResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListVehicles::route('/'),
-            'create' => Pages\CreateVehicle::route('/create'),
-            'view' => Pages\ViewVehicle::route('/{record}'),
-            'edit' => Pages\EditVehicle::route('/{record}/edit'),
+            'index' => Pages\ListSchoolLessons::route('/'),
+            // 'create' => Pages\CreateSchoolLesson::route('/create'),
+            // 'edit' => Pages\EditSchoolLesson::route('/{record}/edit'),
         ];
+    }
+
+    public static function mutateFormDataBeforeCreate(array $data): array
+    {
+        10 / 0;
+        $data['user_id'] = auth()->id();
+
+        return $data;
     }
 }

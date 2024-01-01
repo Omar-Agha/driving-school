@@ -7,10 +7,11 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class SchoolPanelStatsOverview extends BaseWidget
 {
+    protected static ?int $sort = 1;
     protected function getStats(): array
     {
         $school = auth()->user()->school;
-        $school->loadCount('instructors','vehicles');
+        $school->loadCount('instructors', 'vehicles');
         return [
             Stat::make('Instructors', $school->instructors_count)
                 ->description("some addition description")
@@ -31,14 +32,22 @@ class SchoolPanelStatsOverview extends BaseWidget
                 ->color('primary')
                 ->chart([7, 2, 10, 3, 15, 4, 17, 33]),
 
-                
+
 
             Stat::make('Month Cash', '100$')
                 ->description("Todays Cash 33$")
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('success')
-                ->chart([7, 2, 10, 3, 15, 4, 17])
-                
+                ->chart([7, 2, 10, 3, 15, 4, 17]),
+
+
+            Stat::make('School Code', $school->code)
+
+                ->descriptionIcon('heroicon-m-arrow-trending-up')
+
+
+
+
 
 
 
