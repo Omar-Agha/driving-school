@@ -9,6 +9,7 @@ use App\Models\Event;
 use App\Models\JoinSchoolRequest;
 use App\Models\School;
 use App\Models\Student;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class StudentController extends Controller
@@ -34,19 +35,25 @@ class StudentController extends Controller
 
     public function getJoinSchoolRequests()
     {
-
-
         /** @var Student */
         $student = auth()->user()->student;
         $requests = $student->load('joinSchoolRequest.school')->joinSchoolRequest;
         return JoinSchoolRequestResource::collection($requests);
     }
 
-    public function getStudentAppointments()
+    public function getUpcomingStudentAppointments()
+    {
+
+        /** @var Student */
+        $student = auth()->user()->student;
+        return DefaultResource::make($student->appointments->where('start', '>=', Carbon::now())->load(['lesson', 'vehicle', 'instructor']));
+    }
+
+    public function getPreviousStudentAppointments()
     {
         /** @var Student */
         $student = auth()->user()->student;
-        return DefaultResource::make($student->appointments->load(['lesson', 'vehicle', 'instructor']));
+        return DefaultResource::make($student->appointments->where('start', '<', Carbon::now())->load(['lesson', 'vehicle', 'instructor']));
     }
 
     public function getStudentAppointment(Event $appointment)

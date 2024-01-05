@@ -1,31 +1,21 @@
 <?php
 
-use App\Enums\QuestionToDoAnswerEnum;
-use App\Enums\UserRoleEnum;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\QuestionToDoController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\VideoController;
-use App\Http\Requests\StudentRequest;
-use App\Http\Resources\DefaultResource;
-use App\Models\Event;
+
 use App\Models\QuestionToDo;
-use App\Models\QuestionToDoAnswer;
-use App\Models\School;
-use App\Models\SchoolPackageSubscriptionsPivot;
-use App\Models\Student;
-use App\Models\User;
-use Carbon\Carbon;
+
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Benchmark;
-use Illuminate\Support\Facades\Auth;
+
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-use Saade\FilamentFullCalendar\Data\EventData;
-use Illuminate\Support\Number;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -63,7 +53,9 @@ Route::prefix('school')->middleware('auth:api')->group(function () {
 Route::prefix('student')->middleware('auth:sanctum')->group(function () {
     Route::post("request-join-school", [StudentController::class, "requestJoinSchool"])->name("student.request-join-school")->middleware('role:student');
     Route::get("request-join-school", [StudentController::class, "getJoinSchoolRequests"])->name("student.get-request-join-school")->middleware('role:student');
-    Route::get("appointments", [StudentController::class, "getStudentAppointments"])->name("student.get-student-appointments")->middleware('role:student');
+    Route::get("appointments-upcoming", [StudentController::class, "getUpcomingStudentAppointments"])->name("student.get-student-upcoming-appointments")->middleware('role:student');
+    Route::get("appointments-previous", [StudentController::class, "getPreviousStudentAppointments"])->name("student.get-student-previous-appointments")->middleware('role:student');
+
     Route::get("appointments/{appointment}", [StudentController::class, "getStudentAppointment"])->name("student.get-student-appointments")->middleware('role:student');
 });
 
