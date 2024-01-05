@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\QuestionToDoAnswerEnum;
 use App\Enums\UserRoleEnum;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
@@ -11,6 +12,7 @@ use App\Http\Requests\StudentRequest;
 use App\Http\Resources\DefaultResource;
 use App\Models\Event;
 use App\Models\QuestionToDo;
+use App\Models\QuestionToDoAnswer;
 use App\Models\School;
 use App\Models\SchoolPackageSubscriptionsPivot;
 use App\Models\Student;
@@ -66,20 +68,27 @@ Route::prefix('student')->middleware('auth:sanctum')->group(function () {
 });
 
 Route::prefix('questions-to-do')->middleware('auth:sanctum')->group(function () {
-    Route::get("groups", [QuestionToDoController::class, "getQuestionGroups"])->name("question_to_do.groupsg");
+    Route::get("groups", [QuestionToDoController::class, "getQuestionGroups"])->name("question_to_do.group");
     Route::get("questions", [QuestionToDoController::class, "getQuestion"])->name("question_to_do.questions");
-
-    Route::get("appointments/{appointment}", [StudentController::class, "getStudentAppointment"])->name("student.get-student-appointments")->middleware('role:student');
+    Route::post("answer/{question}", [QuestionToDoController::class, "answerQuestion"])->name("question_to_do.answer-question");
 });
 
 
 
 Route::get("test", function () {
-    // return QuestionToDo::all();
+    $user_id = 5;
 
-    return DefaultResource::make(QuestionToDo::groupBy('group')->select('group', DB::raw('count(*) as total'))->get());
+    $groups =  QuestionToDo::withCount(['questionAnswer as answers_count' =>  function (Builder $query) use ($user_id) {
+        $query->where('user_id', $user_id);
+    }])->get();
 
-    return QuestionToDo::all()->pluck('group');
-    return Event::all();
-    return;
+    // return $groups;
+    $output = [];
+    foreach ($groups as $item) {
+        $output[$item->group]['total'] = ($output[$item->group]['total'] ?? 0) + 1;
+        $output[$item->group]['answers'] = ($output[$item->group]['answers'] ?? 0) + $item->answers_count;
+    }
+    return $output;
+
+    return QuestionToDo::groupBy('group')->select('group', DB::raw('count(*) as total'))->get();
 });

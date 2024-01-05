@@ -28,7 +28,7 @@ class QuestionToDoResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->columnSpanFull()
-                    ->datalist(QuestionToDo::all()->pluck('group')),
+                    ->datalist(QuestionToDo::all()->pluck('group')->unique()),
 
                 Forms\Components\TextInput::make('question')
                     ->required()

@@ -19,8 +19,9 @@ return new class extends Migration
             $table->foreignIdFor(QuestionToDo::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->enum('answer',['yes','no','not-sure']);
+            // $table->unique(['question_to_do_id','user_id']);
 
-            $table->unique(['question_to_do_id','user_id']);
+            // $table->primary(['question_to_do_id','user_id']);
         });
     }
 
