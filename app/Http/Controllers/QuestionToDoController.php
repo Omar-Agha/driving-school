@@ -25,6 +25,15 @@ class QuestionToDoController extends Controller
             $output[$item->group]['total'] = ($output[$item->group]['total'] ?? 0) + 1;
             $output[$item->group]['answers'] = ($output[$item->group]['answers'] ?? 0) + $item->answers_count;
         }
+        $output =
+            collect($output)->map(function ($item, $key) {
+                return [
+                    'name' => $key,
+                    'total' => $item['total'],
+                    'answers' => $item['answers'],
+                ];
+            })->values()->all();
+
         return DefaultResource::make($output);
         // return DefaultResource::make(QuestionToDo::groupBy('group')->select('group', DB::raw('count(*) as total'))->get());
     }
