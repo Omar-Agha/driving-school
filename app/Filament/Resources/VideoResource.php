@@ -8,9 +8,12 @@ use App\Filament\Resources\VideoResource\RelationManagers;
 use App\Helpers\YoutubeURLHelper;
 use App\Models\Video;
 use Filament\Forms;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -30,7 +33,14 @@ class VideoResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('url')
                     ->required()
-                    ->maxLength(255)->columnSpanFull(),
+                    ->maxLength(255)
+                    ->columnSpanFull(),
+                TextInput::make('title')
+                    ->required()
+                    ->columnSpanFull(),
+                Textarea::make('description')
+                    ->required()
+                    ->columnSpanFull()
             ]);
     }
 
@@ -48,6 +58,8 @@ class VideoResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 // Tables\Columns\TextColumn::make('url'),
                 Tables\Columns\ViewColumn::make('url')->view('filament.widgets.youtube-column'),
+                TextColumn::make('title'),
+                TextColumn::make('description')->words(10)
 
             ])
             ->filters([
@@ -74,6 +86,4 @@ class VideoResource extends Resource
             'index' => Pages\ManageVideos::route('/'),
         ];
     }
-
-
 }
