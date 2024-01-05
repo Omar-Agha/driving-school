@@ -45,6 +45,7 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::get("video", [VideoController::class, "index"])->name("video.index");
+Route::get("video/{video}",[VideoController::class,"get"])->name('video.get');
 Route::get("course", [CourseController::class, "index"])->name("course.index");
 
 Route::prefix('school')->middleware('auth:api')->group(function () {

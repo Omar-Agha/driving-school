@@ -8,8 +8,14 @@ use Illuminate\Http\Request;
 
 class VideoController extends Controller
 {
-    
-    public function index(){
+
+    public function index()
+    {
         return DefaultResource::collection(Video::all());
+    }
+
+    public function get(Video $video)
+    {
+        return DefaultResource::make($video);
     }
 }
