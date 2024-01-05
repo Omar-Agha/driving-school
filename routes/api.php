@@ -61,7 +61,7 @@ Route::prefix('student')->middleware('auth:sanctum')->group(function () {
 
 Route::prefix('questions-to-do')->middleware('auth:sanctum')->group(function () {
     Route::get("groups", [QuestionToDoController::class, "getQuestionGroups"])->name("question_to_do.group");
-    Route::get("questions", [QuestionToDoController::class, "getQuestion"])->name("question_to_do.questions");
+    Route::post("questions", [QuestionToDoController::class, "getQuestion"])->name("question_to_do.questions");
     Route::post("answer/{question}", [QuestionToDoController::class, "answerQuestion"])->name("question_to_do.answer-question");
 });
 
