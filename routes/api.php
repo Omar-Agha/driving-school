@@ -3,11 +3,14 @@
 use App\Enums\UserRoleEnum;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\QuestionToDoController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\VideoController;
 use App\Http\Requests\StudentRequest;
+use App\Http\Resources\DefaultResource;
 use App\Models\Event;
+use App\Models\QuestionToDo;
 use App\Models\School;
 use App\Models\SchoolPackageSubscriptionsPivot;
 use App\Models\Student;
@@ -17,6 +20,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Benchmark;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Saade\FilamentFullCalendar\Data\EventData;
 use Illuminate\Support\Number;
@@ -45,7 +49,7 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::get("video", [VideoController::class, "index"])->name("video.index");
-Route::get("video/{video}",[VideoController::class,"get"])->name('video.get');
+Route::get("video/{video}", [VideoController::class, "get"])->name('video.get');
 Route::get("course", [CourseController::class, "index"])->name("course.index");
 
 Route::prefix('school')->middleware('auth:api')->group(function () {
@@ -61,10 +65,21 @@ Route::prefix('student')->middleware('auth:sanctum')->group(function () {
     Route::get("appointments/{appointment}", [StudentController::class, "getStudentAppointment"])->name("student.get-student-appointments")->middleware('role:student');
 });
 
+Route::prefix('questions-to-do')->middleware('auth:sanctum')->group(function () {
+    Route::get("groups", [QuestionToDoController::class, "getQuestionGroups"])->name("question_to_do.groupsg");
+    Route::get("questions", [QuestionToDoController::class, "getQuestion"])->name("question_to_do.questions");
+
+    Route::get("appointments/{appointment}", [StudentController::class, "getStudentAppointment"])->name("student.get-student-appointments")->middleware('role:student');
+});
+
 
 
 Route::get("test", function () {
-    return 'jjd';
+    // return QuestionToDo::all();
+
+    return DefaultResource::make(QuestionToDo::groupBy('group')->select('group', DB::raw('count(*) as total'))->get());
+
+    return QuestionToDo::all()->pluck('group');
     return Event::all();
     return;
 });
