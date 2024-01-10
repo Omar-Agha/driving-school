@@ -10,6 +10,7 @@ use App\Models\JoinSchoolRequest;
 use App\Models\School;
 use App\Models\Student;
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Http\Request;
 
 class StudentController extends Controller
@@ -46,14 +47,30 @@ class StudentController extends Controller
 
         /** @var Student */
         $student = auth()->user()->student;
-        return DefaultResource::make($student->appointments->where('start', '>=', Carbon::now())->load(['lesson', 'vehicle', 'instructor']));
+        $appointments  = $student->appointments
+            ->where('start', '>=', Carbon::now())
+            ->load(['lesson', 'vehicle', 'instructor']);
+        
+
+        $appointments->map(function($item){
+            $item->date = Carbon::parse($item->start)->format('Y-m-d');
+        });
+        
+
+        return DefaultResource::collection($appointments);
     }
 
     public function getPreviousStudentAppointments()
     {
         /** @var Student */
         $student = auth()->user()->student;
-        return DefaultResource::make($student->appointments->where('start', '<', Carbon::now())->load(['lesson', 'vehicle', 'instructor']));
+
+        $appointments = $student->appointments->where('start', '<', Carbon::now())->load(['lesson', 'vehicle', 'instructor']);
+
+        $appointments->map(function ($item) {
+            $item->date = Carbon::parse($item->start)->format('Y-m-d');
+        });
+        return DefaultResource::collection($appointments);
     }
 
     public function getStudentAppointment(Event $appointment)
