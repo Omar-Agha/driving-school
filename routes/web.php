@@ -59,7 +59,11 @@ Route::get('/api-full-calender', function (Request $request) {
                 "student_name" => Str::replaceArray('?', [$event->student->first_name, $event->student->last_name], "? ?"),
                 'instructor_name' => $event->instructor->name,
                 'vehicle_name' => $event->vehicle->number_plate,
-                'lesson_name' => $event->lesson->title
+                'lesson_name' => $event->lesson->title,
+                'car_type' => $event->car_type,
+                'location' => "At " . $event->location . " location",
+                'limit_time_to_cancel' => $event->limit_time_to_cancel
+
             ]
         )
         ->all();

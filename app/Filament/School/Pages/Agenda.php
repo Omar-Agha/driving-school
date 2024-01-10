@@ -19,12 +19,15 @@ class Agenda extends Page
     public $vehicles;
     public $instructors;
 
+    public $car_types = ['automatic', 'manual'];
+
 
     public $eventInstructor;
 
 
     public function save($data)
     {
+
 
         $start_date = Carbon::create($data['start_date']);
         $start_date->setHour($data['time_hour'] % 12)->setMinute($data['time_min']);
@@ -50,6 +53,9 @@ class Agenda extends Page
             'start' => $start_date,
             'end' => $end_date,
             'name' => 'new',
+            'car_type' => $data['car_type'],
+            'location' => $data['location'],
+            'limit_time_to_cancel'=>$data['limit_time_to_cancel']
 
         ]);
 

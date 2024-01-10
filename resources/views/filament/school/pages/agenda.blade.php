@@ -67,6 +67,15 @@
             event['student'] = props?.student_id ?? {{ $students[0]->id ?? 0 }};
             event['vehicle'] = props?.vehicle_id ?? {{ $vehicles[0]->id ?? 0 }};
         
+        
+            event['car_type'] = props?.car_type ?? 'automatic'
+        
+        
+            event['location'] = props?.location ?? 'school'
+            event['limit_time_to_cancel'] = props?.limit_time_to_cancel ?? 24
+        
+        
+        
         })">
 
         <x-slot name="heading">
@@ -95,6 +104,14 @@
                     <x-filament::input.select x-model=event.lesson name="lesson">
                         @foreach ($lessons as $lesson)
                             <option value="{{ $lesson->id }}">{{ $lesson->title }}</option>
+                        @endforeach
+                    </x-filament::input.select>
+                </x-filament::input.wrapper>
+
+                <x-filament::input.wrapper class="mt-4">
+                    <x-filament::input.select x-model=event.car_type name="car_type">
+                        @foreach ($car_types as $type)
+                            <option value="{{ $type }}">{{ $type }}</option>
                         @endforeach
                     </x-filament::input.select>
                 </x-filament::input.wrapper>
@@ -171,7 +188,7 @@
 
                         <x-filament::input.wrapper>
 
-                            <x-filament::input.select model="event.student" name="student">
+                            <x-filament::input.select x-model="event.student" name="student">
                                 @foreach ($students as $student)
                                     <option value="{{ $student->id }}">{{ $student->full_name }}</option>
                                 @endforeach
@@ -185,13 +202,43 @@
 
                         <x-filament::input.wrapper>
 
-                            <x-filament::input.select model="event.vehicle" name="vehicle">
+                            <x-filament::input.select x-model="event.vehicle" name="vehicle">
                                 @foreach ($vehicles as $vehicle)
                                     <option value="{{ $vehicle->id }}">{{ $vehicle->number_plate }}</option>
                                 @endforeach
                             </x-filament::input.select>
                         </x-filament::input.wrapper>
                     </div>
+
+
+                    <div class="col-span-12 mt-5">
+                        <div class="flex items-center mb-4">
+                            <input id="location_school" type="radio" value="school" name="appointment_location"
+                                x-model="event.location"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label for="default-radio-1"
+                                class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">School
+                                location</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input checked id="location_student" type="radio" value="student"
+                                name="appointment_location" x-model="event.location"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label for="default-radio-2"
+                                class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Student
+                                location</label>
+                        </div>
+                    </div>
+
+
+
+                    <div class="col-span-12 mt-4">
+                        <label for="">limit Time to Cancel</label>
+                        <x-filament::input.wrapper>
+                            <x-filament::input type="number" x-model="event.limit_time_to_cancel" />
+                        </x-filament::input.wrapper>
+                    </div>
+
 
 
 
@@ -486,6 +533,10 @@
                     let instructor = props.instructor_name
                     let vehicle = props.vehicle_name
                     let lesson = props.lesson_name
+                    let carType = props.car_type;
+                    let location = props.location;
+
+                    console.log(props);
 
 
                     let space = document.createElement('br');
@@ -512,12 +563,21 @@
                     let lessonDom = document.createElement('div');
                     lessonDom.innerHTML = `${lesson}`
 
+                    let carTypeDom = document.createElement('div');
+                    carTypeDom.innerHTML = `${carType}`
+
+
+                    let locationDom = document.createElement('div');
+                    locationDom.innerHTML = `${location}`
+
+
 
                     // let arrayOfDomNodes = [dateDom, timeDom, space, lessonDom, space, studentDom, space,
                     //     instructor, space, vehicleDom
                     // ]
-                    let arrayOfDomNodes = [dateDom, timeDom, space, lessonDom, space, studentDom, space,
-                        instructorDom, space, vehicleDom
+                    let arrayOfDomNodes = [dateDom, timeDom, space, lessonDom, space, carTypeDom, space,
+                        studentDom, space,
+                        instructorDom, space, vehicleDom, space, locationDom
                     ]
                     return {
                         domNodes: arrayOfDomNodes
