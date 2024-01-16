@@ -42,6 +42,12 @@ class SchoolResource extends Resource
                         Forms\Components\TextInput::make('school_name')
                             ->required()
                             ->maxLength(255),
+                    Forms\Components\TextInput::make('phone_number')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('address')
+                        ->required()
+                        ->maxLength(255),
 
                         Forms\Components\Hidden::make('code')
                             ->default(Utilities::generateRandomCode())
@@ -54,11 +60,6 @@ class SchoolResource extends Resource
 
                             Forms\Components\Hidden::make('role')
                                 ->default(UserRoleEnum::SCHOOL),
-
-
-
-
-
                             Forms\Components\TextInput::make('email')
                                 ->required()
                                 ->unique()

@@ -34,12 +34,50 @@ class StudentController extends Controller
     }
 
 
+    public function cancelSchoolJoinRequest(JoinSchoolRequest $request)
+    {
+
+
+        /** @var Student */
+        $student = auth()->user()->student;
+        if ($request->student_id != $student->id)
+            return response(['message' => 'you must be the owner of the request'], 401);
+        if ($request->status != null)
+            return response(['message' => 'request is not pending'], 406);
+        $request->status = 'canceled';
+        $request->save();
+
+        return DefaultResource::make(['message' => 'success']);
+    }
+
+
     public function getJoinSchoolRequests()
     {
         /** @var Student */
         $student = auth()->user()->student;
         $requests = $student->load('joinSchoolRequest.school')->joinSchoolRequest;
         return JoinSchoolRequestResource::collection($requests);
+    }
+
+
+    public function getStudentNextAppointment()
+    {
+        /** @var Student */
+        $student = auth()->user()->student;
+        $nextAppointment  = $student->appointments
+            ->where('start', '>=', Carbon::now())
+            ->sortBy('start')
+            ->load(['lesson', 'vehicle', 'instructor'])
+            ->first();
+
+
+        $nextAppointment->date =
+            Carbon::parse($nextAppointment->start)->format('Y-m-d');
+
+
+
+
+        return DefaultResource::make($nextAppointment);
     }
 
     public function getUpcomingStudentAppointments()
@@ -50,12 +88,12 @@ class StudentController extends Controller
         $appointments  = $student->appointments
             ->where('start', '>=', Carbon::now())
             ->load(['lesson', 'vehicle', 'instructor']);
-        
 
-        $appointments->map(function($item){
+
+        $appointments->map(function ($item) {
             $item->date = Carbon::parse($item->start)->format('Y-m-d');
         });
-        
+
 
         return DefaultResource::collection($appointments);
     }

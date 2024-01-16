@@ -52,11 +52,15 @@ Route::prefix('school')->middleware('auth:api')->group(function () {
 
 Route::prefix('student')->middleware('auth:sanctum')->group(function () {
     Route::post("request-join-school", [StudentController::class, "requestJoinSchool"])->name("student.request-join-school")->middleware('role:student');
+    Route::post("cancel-school-join-request/{request}", [StudentController::class, "cancelSchoolJoinRequest"])->name("student.cancel-request-join-school")->middleware('role:student');
+
     Route::get("request-join-school", [StudentController::class, "getJoinSchoolRequests"])->name("student.get-request-join-school")->middleware('role:student');
     Route::get("appointments-upcoming", [StudentController::class, "getUpcomingStudentAppointments"])->name("student.get-student-upcoming-appointments")->middleware('role:student');
     Route::get("appointments-previous", [StudentController::class, "getPreviousStudentAppointments"])->name("student.get-student-previous-appointments")->middleware('role:student');
 
     Route::get("appointments/{appointment}", [StudentController::class, "getStudentAppointment"])->name("student.get-student-appointments")->middleware('role:student');
+    Route::get("next-appointment", [StudentController::class, "getStudentNextAppointment"])->name("student.get-student-next-appointments")->middleware('role:student');
+    
 });
 
 Route::prefix('questions-to-do')->middleware('auth:sanctum')->group(function () {

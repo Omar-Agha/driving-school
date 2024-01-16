@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 
 class JoinSchoolRequest extends Model
 {
@@ -25,12 +26,23 @@ class JoinSchoolRequest extends Model
     }
 
 
-    public function accept()
+    public function accept(): bool
     {
-        $this->status = 'accepted';
-        $this->student->school_id = $this->school_id;
-        $this->save();
-        $this->student->save();
+
+
+        DB::transaction(function () {
+            if ($this->student->school_id != null) {
+                $this->status = 'canceled';
+            } else {
+                JoinSchoolRequest::where('id', '!=', $this->id)->where('student_id', $this->student_id)->update(['status' => 'canceled']);
+                $this->status = 'accepted';
+                $this->student->school_id = $this->school_id;
+            }
+
+            $this->save();
+            $this->student->save();
+        });
+        return true;
     }
 
     public function refuse()

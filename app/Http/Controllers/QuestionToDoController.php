@@ -41,6 +41,11 @@ class QuestionToDoController extends Controller
     public function getQuestion()
     {
         $group = request('group');
+        return QuestionToDo::with([
+            'questionToDoAnswer'=>function(Builder $builder){
+                
+            }
+            ])->get();
         return DefaultResource::make(QuestionToDo::whereGroup($group)->get());
     }
 
@@ -50,7 +55,7 @@ class QuestionToDoController extends Controller
             'answer' => ['required', Rule::enum(QuestionToDoAnswerEnum::class)]
         ]);
 
-        $question->answer(auth()->user(), QuestionToDoAnswerEnum::from(request('answer')));
+        $question->answerQuestion(auth()->user(), QuestionToDoAnswerEnum::from(request('answer')));
 
         return DefaultResource::make(['message' => 'success']);
     }

@@ -27,11 +27,26 @@ class ConfigurationResource extends JsonResource
     {
 
         $school = null;
-        if ($this->isStudent())
+        $phone_number = '';
+        $street_name = '';
+        $house_number = '';
+        $city = '';
+        $town = '';
+
+        if ($this->isStudent()) {
             $school = $this->student->school;
+            $phone_number = $this->student->phone_number;
+            $street_name = $this->student->street_name;
+            $house_number = $this->student->house_name;
+            $city = $this->student->city;
+            $town = $this->student->country;
+        }
 
         if ($this->isInstructor())
             $school = $this->instructor->school;
+
+
+
 
 
         return [
@@ -41,7 +56,12 @@ class ConfigurationResource extends JsonResource
             'role' => $this->role,
             'is_suspended' => $this->is_suspended,
             'school' => $school,
-            'token' => $this->whenNotNull($this->token)
+            'token' => $this->whenNotNull($this->token),
+            'phone_number' => $phone_number,
+            'street_name' => $street_name,
+            'house_number' => $house_number,
+            'city' => $city,
+            'town' => $town
         ];
     }
 }

@@ -14,17 +14,24 @@ class QuestionToDo extends Model
 
 
 
-    public function questionAnswer():HasMany{
+    public function questionAnswer(): HasMany
+    {
         return $this->hasMany(QuestionToDoAnswer::class, 'question_to_do_id');
     }
 
 
-    public function answer(User $user,QuestionToDoAnswerEnum $answer){
+
+    public function questionToDoAnswer(): HasMany
+    {
+        return $this->hasMany(QuestionToDoAnswer::class);
+    }
+
+
+    public function answerQuestion(User $user, QuestionToDoAnswerEnum $answer)
+    {
         QuestionToDoAnswer::updateOrInsert([
             'user_id' => $user->id,
             'question_to_do_id' => $this->id
         ], ['answer' => $answer]);
-
-        
     }
 }
