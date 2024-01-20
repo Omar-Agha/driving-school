@@ -115,4 +115,15 @@ class StudentController extends Controller
     {
         return DefaultResource::make($appointment->load(['student', 'instructor', 'vehicle', 'lesson']));
     }
+
+
+    public function cancelAppointment(Event $appointment){
+        $student = auth()->user()->student;
+        if($appointment->student_id != $student->id)abort(403,'student is not the owner of the appointment');
+
+        $cancellationTimeLimit = $appointment->limit_time_to_cancel;
+        if(now()->diffInHours($appointment->start,false));
+        $appointment->cancel();
+
+    }
 }

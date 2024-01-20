@@ -133,4 +133,17 @@ class User extends Authenticatable implements HasName
         if ($this->isInstructor())
             return $this->instructor->avatar_url;
     }
+
+
+    public function block()
+    {
+        $this->is_suspended = true;
+        $this->save();
+    }
+
+    public function unblock()
+    {
+        $this->is_suspended = false;
+        $this->save();
+    }
 }

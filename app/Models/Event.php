@@ -33,4 +33,10 @@ class Event extends Model
     {
         return $this->belongsTo(SchoolLesson::class, 'school_lesson_id');
     }
+
+    public function cancel()
+    {
+        $this->is_canceled = true;
+        $this->save();
+    }
 }

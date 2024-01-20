@@ -6,7 +6,7 @@ use App\Http\Controllers\QuestionToDoController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\VideoController;
-
+use App\Models\Event;
 use App\Models\QuestionToDo;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -44,13 +44,13 @@ Route::get("video", [VideoController::class, "index"])->name("video.index");
 Route::get("video/{video}", [VideoController::class, "get"])->name('video.get');
 Route::get("course", [CourseController::class, "index"])->name("course.index");
 
-Route::prefix('school')->middleware('auth:api')->group(function () {
+Route::prefix('school')->middleware(['auth:api', 'banned'])->group(function () {
     Route::post("accept-student-request/{request}", [SchoolController::class, "acceptStudentRequest"])->name("school.accept-student-request");
     Route::post("refuse-student-request/{request}", [SchoolController::class, "refuseStudentRequest"])->name("school.refuse-student-request");
 });
 
 
-Route::prefix('student')->middleware('auth:sanctum')->group(function () {
+Route::prefix('student')->middleware(['auth:sanctum', 'banned'])->group(function () {
     Route::post("request-join-school", [StudentController::class, "requestJoinSchool"])->name("student.request-join-school")->middleware('role:student');
     Route::post("cancel-school-join-request/{request}", [StudentController::class, "cancelSchoolJoinRequest"])->name("student.cancel-request-join-school")->middleware('role:student');
 
@@ -60,10 +60,10 @@ Route::prefix('student')->middleware('auth:sanctum')->group(function () {
 
     Route::get("appointments/{appointment}", [StudentController::class, "getStudentAppointment"])->name("student.get-student-appointments")->middleware('role:student');
     Route::get("next-appointment", [StudentController::class, "getStudentNextAppointment"])->name("student.get-student-next-appointments")->middleware('role:student');
-    
+    Route::post("cancel-appointment/{appointment}", [StudentController::class, "cancelAppointment"])->name("student.cancel-student-appointments")->middleware('role:student');
 });
 
-Route::prefix('questions-to-do')->middleware('auth:sanctum')->group(function () {
+Route::prefix('questions-to-do')->middleware(['auth:sanctum', 'banned'])->group(function () {
     Route::get("groups", [QuestionToDoController::class, "getQuestionGroups"])->name("question_to_do.group");
     Route::post("questions", [QuestionToDoController::class, "getQuestion"])->name("question_to_do.questions");
     Route::post("answer/{question}", [QuestionToDoController::class, "answerQuestion"])->name("question_to_do.answer-question");
@@ -71,20 +71,17 @@ Route::prefix('questions-to-do')->middleware('auth:sanctum')->group(function () 
 
 
 
+
+
+
+
+
+
+
 Route::get("test", function () {
-    $user_id = 5;
 
-    $groups =  QuestionToDo::withCount(['questionAnswer as answers_count' =>  function (Builder $query) use ($user_id) {
-        $query->where('user_id', $user_id);
-    }])->get();
-
-    // return $groups;
-    $output = [];
-    foreach ($groups as $item) {
-        $output[$item->group]['total'] = ($output[$item->group]['total'] ?? 0) + 1;
-        $output[$item->group]['answers'] = ($output[$item->group]['answers'] ?? 0) + $item->answers_count;
-    }
-    return $output;
-
-    return QuestionToDo::groupBy('group')->select('group', DB::raw('count(*) as total'))->get();
+    $e = Event::first();
+    return $e;
+    $cancellationTimeLimit = $appointment->limit_time_to_cancel;
+    if (now()->diffInHours($appointment->start, false));
 });

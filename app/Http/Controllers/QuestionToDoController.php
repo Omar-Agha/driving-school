@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Enums\QuestionToDoAnswerEnum;
 use App\Http\Resources\DefaultResource;
 use App\Models\QuestionToDo;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Symfony\Component\Console\Input\Input;
-use Illuminate\Database\Eloquent\Builder;
+
 
 
 class QuestionToDoController extends Controller
@@ -42,10 +43,21 @@ class QuestionToDoController extends Controller
     {
         $group = request('group');
         return QuestionToDo::with([
-            'questionToDoAnswer'=>function(Builder $builder){
-                
+            'questionToDoAnswer'
+            => function ($builder) {
+                $builder->where('user_id', auth()->user()->id);
             }
-            ])->get();
+        ])->get()
+            ->transform(function ($question) {
+                $answer = $question->getRelation('questionToDoAnswer');
+                $answerValue = null;
+                if (count($answer) != 0)
+                    $answerValue = $answer[0]->answer;
+
+                $question->answer =  $answerValue;
+                $question->unsetRelation('questionToDoAnswer');
+                return $question;
+            });
         return DefaultResource::make(QuestionToDo::whereGroup($group)->get());
     }
 
