@@ -17,7 +17,7 @@ class QuestionToDoController extends Controller
 {
     public function getQuestionGroups()
     {
-        $groups =  QuestionToDo::withCount(['questionAnswer as answers_count' =>  function (Builder $query) {
+        $groups =  QuestionToDo::withCount(['questionAnswer as answers_count' =>  function ($query) {
             $query->where('user_id', auth()->user()->id);
         }])->get();
 
