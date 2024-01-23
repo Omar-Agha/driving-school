@@ -17,6 +17,7 @@ class QuestionToDoController extends Controller
 {
     public function getQuestionGroups()
     {
+
         $groups =  QuestionToDo::withCount(['questionAnswer as answers_count' =>  function ($query) {
             $query->where('user_id', auth()->user()->id);
         }])->get();
@@ -35,14 +36,15 @@ class QuestionToDoController extends Controller
                 ];
             })->values()->all();
 
-        return DefaultResource::make($output);
+
+        return DefaultResource::collection($output);
         // return DefaultResource::make(QuestionToDo::groupBy('group')->select('group', DB::raw('count(*) as total'))->get());
     }
 
     public function getQuestion()
     {
         $group = request('group');
-        return QuestionToDo::with([
+        $result =  QuestionToDo::with([
             'questionToDoAnswer'
             => function ($builder) {
                 $builder->where('user_id', auth()->user()->id);
@@ -58,7 +60,7 @@ class QuestionToDoController extends Controller
                 $question->unsetRelation('questionToDoAnswer');
                 return $question;
             });
-        return DefaultResource::make(QuestionToDo::whereGroup($group)->get());
+        return DefaultResource::make($result);
     }
 
     public function answerQuestion(QuestionToDo $question)

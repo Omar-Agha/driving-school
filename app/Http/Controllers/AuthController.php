@@ -13,12 +13,17 @@ use App\Models\Student;
 use App\Models\User;
 use Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Password;
 
 use App\Http\Requests\StudentRequest;
 use App\Http\Resources\ConfigurationResource;
 use App\Models\Instructor;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -75,5 +80,28 @@ class AuthController extends Controller
         $user = auth()->user();
 
         return new ConfigurationResource($user);
+    }
+
+
+
+    public function forgetPassword($request){
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->setRememberToken(Str::random(60));
+
+                $user->save();
+
+                event(new PasswordReset($user));
+            }
+        );
     }
 }
