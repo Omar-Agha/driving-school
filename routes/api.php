@@ -38,6 +38,12 @@ Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::get('account-configuration', [AuthController::class, 'accountConfiguration'])->middleware('auth:sanctum');
     Route::post('forgot-password', [AuthController::class, 'forgetPassword']);
+    Route::post('reset-password', [AuthController::class, 'resetPassword']);
+    Route::post('verify-forget-code', [AuthController::class, 'verifyForgetCode']);
+    Route::post('change-password', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
+
+
+
 
 });
 
@@ -54,14 +60,14 @@ Route::prefix('school')->middleware(['auth:api', 'banned'])->group(function () {
 Route::prefix('student')->middleware(['auth:sanctum', 'banned'])->group(function () {
     Route::post("request-join-school", [StudentController::class, "requestJoinSchool"])->name("student.request-join-school")->middleware('role:student');
     Route::post("cancel-school-join-request/{request}", [StudentController::class, "cancelSchoolJoinRequest"])->name("student.cancel-request-join-school")->middleware('role:student');
-
     Route::get("request-join-school", [StudentController::class, "getJoinSchoolRequests"])->name("student.get-request-join-school")->middleware('role:student');
     Route::get("appointments-upcoming", [StudentController::class, "getUpcomingStudentAppointments"])->name("student.get-student-upcoming-appointments")->middleware('role:student');
     Route::get("appointments-previous", [StudentController::class, "getPreviousStudentAppointments"])->name("student.get-student-previous-appointments")->middleware('role:student');
-
     Route::get("appointments/{appointment}", [StudentController::class, "getStudentAppointment"])->name("student.get-student-appointments")->middleware('role:student');
     Route::get("next-appointment", [StudentController::class, "getStudentNextAppointment"])->name("student.get-student-next-appointments")->middleware('role:student');
     Route::post("cancel-appointment/{appointment}", [StudentController::class, "cancelAppointment"])->name("student.cancel-student-appointments")->middleware('role:student');
+    Route::post("update-account", [StudentController::class, "updateAccount"])->name("student.update-account")->middleware('role:student');
+
 });
 
 Route::prefix('questions-to-do')->middleware(['auth:sanctum', 'banned'])->group(function () {

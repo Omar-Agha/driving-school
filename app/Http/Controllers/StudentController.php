@@ -117,13 +117,25 @@ class StudentController extends Controller
     }
 
 
-    public function cancelAppointment(Event $appointment){
+    public function cancelAppointment(Event $appointment)
+    {
         $student = auth()->user()->student;
-        if($appointment->student_id != $student->id)abort(403,'student is not the owner of the appointment');
+        if ($appointment->student_id != $student->id) abort(403, 'student is not the owner of the appointment');
 
         $cancellationTimeLimit = $appointment->limit_time_to_cancel;
-        if(now()->diffInHours($appointment->start,false));
+        if (now()->diffInHours($appointment->start, false));
         $appointment->cancel();
+    }
 
+
+    public function updateAccount()
+    {
+
+        /** @var Student */
+        $student = auth()->user()->student;
+
+        $student->update(request()->all());
+
+        return DefaultResource::make(['message' => $student]);
     }
 }

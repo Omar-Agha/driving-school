@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Password;
 use App\Http\Requests\StudentRequest;
 use App\Http\Resources\ConfigurationResource;
 use App\Models\Instructor;
+use App\Models\MobileResetPassword;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
@@ -75,7 +76,7 @@ class AuthController extends Controller
 
     public function accountConfiguration()
     {
-        
+
         /** @var User */
         $user = auth()->user();
 
@@ -84,24 +85,73 @@ class AuthController extends Controller
 
 
 
-    public function forgetPassword($request){
-        $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|min:8|confirmed',
+    public function forgetPassword()
+    {
+        request()->validate([
+            'email' => 'required|email|exists:users,email',
         ]);
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function (User $user, string $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password)
-                ])->setRememberToken(Str::random(60));
 
-                $user->save();
+        MobileResetPassword::notExpired()->where('email', request('email'))->delete();
 
-                event(new PasswordReset($user));
-            }
-        );
+
+        $code = Str::random(4);
+        MobileResetPassword::create([
+            'email' => request('email'),
+            'code' => $code,
+            'token' => "tok",
+            'expires_at' => now()->addHour(),
+            'created_at' => now()
+        ]);
     }
+
+    public function resetPassword()
+    {
+        request()->validate([
+            'email' => 'required|email',
+            'code' => 'required|string|size:4',
+            'password' => 'required|string|confirmed',
+        ]);
+
+        $record =  MobileResetPassword::notExpired()->where('email', request('email'))->first();
+        if ($record == null) abort(400, 'no record');
+        if ($record->code != request('code')) abort(400, 'invalid code');
+
+        $user = User::where('email', request('email'))->first();
+        $user->forceFill(['password' => Hash::make(request('password'))])->save();
+        $record->delete();
+
+        return DefaultResource::make(['message' => 'ok']);
+    }
+
+    public function verifyForgetCode()
+    {
+        request()->validate([
+            'email' => 'required|email',
+            'code' => 'required|string|size:4',
+
+        ]);
+        $flag = false;
+        $record =  MobileResetPassword::notExpired()->where('email', request('email'))->first();
+        if ($record != null && $record->code == request('code')) $flag = true;
+
+
+        return DefaultResource::make(['success' => $flag]);
+    }
+
+
+    public function changePassword()
+    {
+        request()->validate([
+            'old_password' => 'required',
+            'new_password' => 'required'
+        ]);
+
+        /** @var User */
+        $user = auth()->user();
+        $user->forceFill(['password' => Hash::make(request('new_password'))])->save();
+        return DefaultResource::make(['success' => true]);
+    }
+
+    //forgetPassword
 }
