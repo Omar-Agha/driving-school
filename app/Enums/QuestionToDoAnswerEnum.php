@@ -6,7 +6,7 @@ enum QuestionToDoAnswerEnum: string
 {
     case YES = 'yes';
     case NO = 'no';
-    case NO_SUER = 'school';
+    case NO_SUER = 'not-sure';
     
 
     public static function toArray()
