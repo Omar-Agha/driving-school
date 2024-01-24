@@ -122,9 +122,15 @@ class StudentController extends Controller
         $student = auth()->user()->student;
         if ($appointment->student_id != $student->id) abort(403, 'student is not the owner of the appointment');
 
+        $diff_hours = now()->diffInHours($appointment->start, false);
         $cancellationTimeLimit = $appointment->limit_time_to_cancel;
-        if (now()->diffInHours($appointment->start, false));
+        if ($diff_hours < 0)         return DefaultResource::make(['message' => 'success']);;
+        if ($diff_hours < $cancellationTimeLimit) abort(402, "cant be canceled");
+
+
         $appointment->cancel();
+
+        return DefaultResource::make(['message' => 'success']);
     }
 
 

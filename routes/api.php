@@ -41,10 +41,6 @@ Route::prefix('auth')->group(function () {
     Route::post('reset-password', [AuthController::class, 'resetPassword']);
     Route::post('verify-forget-code', [AuthController::class, 'verifyForgetCode']);
     Route::post('change-password', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
-
-
-
-
 });
 
 Route::get("video", [VideoController::class, "index"])->name("video.index");
@@ -67,6 +63,7 @@ Route::prefix('student')->middleware(['auth:sanctum', 'banned'])->group(function
     Route::get("next-appointment", [StudentController::class, "getStudentNextAppointment"])->name("student.get-student-next-appointments")->middleware('role:student');
     Route::post("cancel-appointment/{appointment}", [StudentController::class, "cancelAppointment"])->name("student.cancel-student-appointments")->middleware('role:student');
     Route::post("update-account", [StudentController::class, "updateAccount"])->name("student.update-account")->middleware('role:student');
+    
 
 });
 
@@ -88,7 +85,13 @@ Route::prefix('questions-to-do')->middleware(['auth:sanctum', 'banned'])->group(
 Route::get("test", function () {
 
     $e = Event::first();
-    return $e;
-    $cancellationTimeLimit = $appointment->limit_time_to_cancel;
-    if (now()->diffInHours($appointment->start, false));
+
+    $cancellationTimeLimit = $e->limit_time_to_cancel;
+    $diff_hours = now()->diffInHours($e->start, false);
+    if ($diff_hours < 0) abort(403, 'its already passed');
+    if ($diff_hours < $cancellationTimeLimit) return "cant be canceld";
+    $e->is_canceled = true;
+    $e->save();
+
+    
 });
