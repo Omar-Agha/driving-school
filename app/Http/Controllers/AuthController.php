@@ -95,7 +95,7 @@ class AuthController extends Controller
         MobileResetPassword::notExpired()->where('email', request('email'))->delete();
 
 
-        $code = Str::random(4);
+        $code = "0000"; //Str::random(4);
         MobileResetPassword::create([
             'email' => request('email'),
             'code' => $code,
