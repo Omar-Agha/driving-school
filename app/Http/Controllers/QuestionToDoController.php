@@ -43,13 +43,16 @@ class QuestionToDoController extends Controller
 
     public function getQuestion()
     {
+        
         $group = request('group');
         $result =  QuestionToDo::with([
             'questionToDoAnswer'
             => function ($builder) {
                 $builder->where('user_id', auth()->user()->id);
             }
-        ])->get()
+        ])
+        ->whereGroup($group)
+        ->get()
             ->transform(function ($question) {
                 $answer = $question->getRelation('questionToDoAnswer');
                 $answerValue = null;
