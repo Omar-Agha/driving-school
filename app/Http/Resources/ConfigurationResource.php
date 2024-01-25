@@ -32,6 +32,7 @@ class ConfigurationResource extends JsonResource
         $house_number = '';
         $city = '';
         $town = '';
+        $student_id =null;
 
         if ($this->isStudent()) {
             $school = $this->student->school;
@@ -40,6 +41,7 @@ class ConfigurationResource extends JsonResource
             $house_number = $this->student->house_name;
             $city = $this->student->city;
             $town = $this->student->country;
+            $student_id = $this->student->id;
         }
 
         if ($this->isInstructor())
@@ -61,7 +63,9 @@ class ConfigurationResource extends JsonResource
             'street_name' => $street_name,
             'house_number' => $house_number,
             'city' => $city,
-            'town' => $town
+            'town' => $town,
+            'user_id'=>$this->id,
+            'student_id'=> $student_id
         ];
     }
 }
