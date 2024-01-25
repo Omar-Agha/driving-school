@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\ProgressItemController;
 use App\Http\Controllers\QuestionToDoController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\StudentController;
@@ -63,14 +64,27 @@ Route::prefix('student')->middleware(['auth:sanctum', 'banned'])->group(function
     Route::get("next-appointment", [StudentController::class, "getStudentNextAppointment"])->name("student.get-student-next-appointments")->middleware('role:student');
     Route::post("cancel-appointment/{appointment}", [StudentController::class, "cancelAppointment"])->name("student.cancel-student-appointments")->middleware('role:student');
     Route::post("update-account", [StudentController::class, "updateAccount"])->name("student.update-account")->middleware('role:student');
-    
-
 });
 
 Route::prefix('questions-to-do')->middleware(['auth:sanctum', 'banned'])->group(function () {
     Route::get("groups", [QuestionToDoController::class, "getQuestionGroups"])->name("question_to_do.group");
     Route::post("questions", [QuestionToDoController::class, "getQuestion"])->name("question_to_do.questions");
     Route::post("answer/{question}", [QuestionToDoController::class, "answerQuestion"])->name("question_to_do.answer-question");
+});
+
+
+Route::prefix('instructor')->middleware(['auth:sanctum', 'banned'])->group(function () {
+    Route::post("answer/{question}", [QuestionToDoController::class, "answerQuestion"])->name("question_to_do.answer-question");
+});
+
+
+Route::prefix('progress-items')->middleware(['auth:sanctum', 'banned'])->group(function () {
+    Route::get("progress-items-for-student/{type}", [ProgressItemController::class, "getProgressItemsForStudent"])->name("student.progress-items")->middleware('role:student');
+    Route::get("progress-items-groups-for-student", [ProgressItemController::class, "getProgressItemsGroupForStudent"])->name("student.progress-items-group")->middleware('role:student');
+    Route::post("rate-student", [ProgressItemController::class, "rateStudent"])->middleware('role:instructor');
+
+    
+    
 });
 
 

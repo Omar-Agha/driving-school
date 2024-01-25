@@ -7,6 +7,7 @@ use App\Http\Resources\DefaultResource;
 use App\Http\Resources\JoinSchoolRequestResource;
 use App\Models\Event;
 use App\Models\JoinSchoolRequest;
+use App\Models\ProgressItem;
 use App\Models\School;
 use App\Models\Student;
 use Carbon\Carbon;
@@ -144,4 +145,6 @@ class StudentController extends Controller
 
         return DefaultResource::make(['message' => $student]);
     }
+
+    
 }
