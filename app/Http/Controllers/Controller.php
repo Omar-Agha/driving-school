@@ -46,6 +46,7 @@ class Controller extends BaseController
             'success' => false,
             'code' => $code,
             'message' => $message,
+            'data'=>[]
         ];
 
         if (!empty($errors)) {

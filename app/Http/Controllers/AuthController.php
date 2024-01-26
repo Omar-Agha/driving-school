@@ -149,12 +149,13 @@ class AuthController extends Controller
         /** @var User */
         $user = auth()->user();
 
-        if (Hash::check(request('old_password'), $user->password)) abort(401,"invalid old Password");
-        
+        if (Hash::check(request('old_password'), $user->password)) return $this->sendError("Invalid Old Password");
+
 
 
 
         $user->forceFill(['password' => Hash::make(request('new_password'))])->save();
+        return $this->sendSuccess([], "Success");
         return DefaultResource::make(['success' => true]);
     }
 
