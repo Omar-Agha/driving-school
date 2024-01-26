@@ -1,12 +1,15 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ComplimentController;
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ProgressItemController;
 use App\Http\Controllers\QuestionToDoController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\VideoController;
+use App\Models\Compliment;
 use App\Models\Event;
 use App\Models\QuestionToDo;
 
@@ -83,8 +86,14 @@ Route::prefix('progress-items')->middleware(['auth:sanctum', 'banned'])->group(f
     Route::get("progress-items-groups-for-student", [ProgressItemController::class, "getProgressItemsGroupForStudent"])->name("student.progress-items-group")->middleware('role:student');
     Route::post("rate-student", [ProgressItemController::class, "rateStudent"])->middleware('role:instructor');
 
+
+});
+
+
+
+Route::prefix('compliment')->middleware(['auth:sanctum', 'banned'])->group(function () {
     
-    
+    Route::post("", [ComplimentController::class, "create"]);
 });
 
 
@@ -96,16 +105,5 @@ Route::prefix('progress-items')->middleware(['auth:sanctum', 'banned'])->group(f
 
 
 
-Route::get("test", function () {
 
-    $e = Event::first();
-
-    $cancellationTimeLimit = $e->limit_time_to_cancel;
-    $diff_hours = now()->diffInHours($e->start, false);
-    if ($diff_hours < 0) abort(403, 'its already passed');
-    if ($diff_hours < $cancellationTimeLimit) return "cant be canceld";
-    $e->is_canceled = true;
-    $e->save();
-
-    
-});
+Route::get("test", [Controller::class, "test"]);
