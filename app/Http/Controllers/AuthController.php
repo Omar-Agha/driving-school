@@ -103,6 +103,8 @@ class AuthController extends Controller
             'expires_at' => now()->addHour(),
             'created_at' => now()
         ]);
+
+        return $this->sendSuccess([], 'Changed Successfully');
     }
 
     public function resetPassword()
@@ -149,7 +151,7 @@ class AuthController extends Controller
         /** @var User */
         $user = auth()->user();
 
-        
+
         if (!Hash::check(request('old_password'), $user->password)) return $this->sendError("Invalid Old Password");
 
 
