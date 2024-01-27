@@ -149,7 +149,8 @@ class AuthController extends Controller
         /** @var User */
         $user = auth()->user();
 
-        if (Hash::check(request('old_password'), $user->password)) return $this->sendError("Invalid Old Password");
+        
+        if (!Hash::check(request('old_password'), $user->password)) return $this->sendError("Invalid Old Password");
 
 
 
