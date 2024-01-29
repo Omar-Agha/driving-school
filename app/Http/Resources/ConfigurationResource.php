@@ -55,7 +55,7 @@ class ConfigurationResource extends JsonResource
         return [
             'first_name' => "dummy",
             'last_name' => 'dummy',
-            'postal_code' => '000',
+            'post_code' => '000',
             'birth_date' => Carbon::now(),
             'userName' => $this->username,
             'email' => $this->email,
