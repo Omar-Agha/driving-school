@@ -116,8 +116,8 @@ class AuthController extends Controller
         ]);
 
         $record =  MobileResetPassword::notExpired()->where('email', request('email'))->first();
-        if ($record == null) abort(400, 'no record');
-        if ($record->code != request('code')) abort(400, 'invalid code');
+        if ($record == null) return $this->sendError("No reset request");
+        if ($record->code != request('code')) return $this->sendError("Invalid Code");
 
         $user = User::where('email', request('email'))->first();
         $user->forceFill(['password' => Hash::make(request('password'))])->save();
@@ -136,6 +136,7 @@ class AuthController extends Controller
         $flag = false;
         $record =  MobileResetPassword::notExpired()->where('email', request('email'))->first();
         if ($record != null && $record->code == request('code')) $flag = true;
+
 
 
         return DefaultResource::make(['success' => $flag]);
