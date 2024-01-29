@@ -46,7 +46,7 @@ class Controller extends BaseController
             'success' => false,
             'code' => $code,
             'message' => $message,
-            'data'=>[]
+            'data' => []
         ];
 
         if (!empty($errors)) {
@@ -59,6 +59,7 @@ class Controller extends BaseController
 
     public function test()
     {
+        return school();
         return $this->sendError("Error my");
 
         return $this->sendSuccess(User::all(), "data", Response::HTTP_BAD_GATEWAY);

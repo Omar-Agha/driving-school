@@ -1,5 +1,6 @@
 <?php
 
+use App\Providers\AuthFunctionsServiceProvider;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
 
@@ -170,6 +171,7 @@ return [
         App\Providers\Filament\AdminPanelProvider::class,
         App\Providers\Filament\SchoolPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
+        AuthFunctionsServiceProvider::class
     ])->toArray(),
 
     /*

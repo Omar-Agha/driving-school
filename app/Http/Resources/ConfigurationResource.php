@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -32,7 +33,7 @@ class ConfigurationResource extends JsonResource
         $house_number = '';
         $city = '';
         $town = '';
-        $student_id =null;
+        $student_id = null;
 
         if ($this->isStudent()) {
             $school = $this->student->school;
@@ -52,6 +53,10 @@ class ConfigurationResource extends JsonResource
 
 
         return [
+            'first_name' => "dummy",
+            'last_name' => 'dummy',
+            'postal_code' => '000',
+            'birth_date' => Carbon::now(),
             'userName' => $this->username,
             'email' => $this->email,
             'avatar' => $this->getAvatar(),
@@ -64,8 +69,8 @@ class ConfigurationResource extends JsonResource
             'house_number' => $house_number,
             'city' => $city,
             'town' => $town,
-            'user_id'=>$this->id,
-            'student_id'=> $student_id
+            'user_id' => $this->id,
+            'student_id' => $student_id
         ];
     }
 }

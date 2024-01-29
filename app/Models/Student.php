@@ -67,4 +67,11 @@ class Student extends Model
     {
         return $this->hasMany(Event::class);
     }
+
+
+
+    public function preferredInstructor(): BelongsTo
+    {
+        return $this->belongsTo(Instructor::class, 'preferred_instructor_id');
+    }
 }
