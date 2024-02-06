@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Instructor;
+use App\Models\School;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -59,6 +62,7 @@ class Controller extends BaseController
 
     public function test()
     {
+        return Student::with('preferredInstructor')->get();
         return school();
         return $this->sendError("Error my");
 

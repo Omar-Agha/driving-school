@@ -37,7 +37,10 @@ class InstructorResource extends Resource
                             ->required()
                             ->image()
                             ->avatar(),
-                        Forms\Components\TextInput::make('name')
+                        Forms\Components\TextInput::make('first_name')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('last_name')
                             ->required()
                             ->maxLength(255),
                         Forms\Components\DatePicker::make('date_of_birth')
@@ -53,22 +56,22 @@ class InstructorResource extends Resource
 
                             Forms\Components\TextInput::make('email')
                                 ->required()
-                                ->unique()
+                                ->unique(ignoreRecord: true)
                                 ->email()
                                 ->readOnlyOn(EditInstructor::class),
 
 
                             Forms\Components\TextInput::make('username')
                                 ->required()
-                                ->unique()
+
                                 ->maxLength(255)
+                                ->unique(ignoreRecord: true)
                                 ->readOnlyOn(EditInstructor::class),
 
                             Password::make('password')
                                 ->required()
                                 ->password()
-                                ->hiddenOn(EditInstructor::class)
-                            ,
+                                ->hiddenOn(EditInstructor::class),
                             Password::make('password_confirmation')
                                 ->required()
                                 ->password()
@@ -94,7 +97,7 @@ class InstructorResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('full_name')
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('avatar')
                     ->searchable(),

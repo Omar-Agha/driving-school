@@ -23,6 +23,10 @@ class JoinSchoolRequestResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+
+
+
+
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::withNullableStatus()->count();
@@ -51,9 +55,24 @@ class JoinSchoolRequestResource extends Resource
             ])
             ->actions([
                 Action::make("accept")
-                    ->action(fn (JoinSchoolRequest $record) => $record->accept())
+                    ->action(function (JoinSchoolRequest $record, array $data) {
+                        $record->accept();
+                        $student = $record->student;
+                        $student->preferred_instructor_id = $data['instructor_id'];
+                        $student->save();
+                    })
+
+                    ->modalHeading('Accepting Student')
+                    ->modalDescription('Select an Preferred Instructor')
+
                     ->button()
-                    ->requiresConfirmation()
+                    ->form([
+                        Forms\Components\Select::make('instructor_id')
+                            ->label('Instructor')
+                            ->options(school()->instructors->pluck('full_name', 'id'))
+                            ->required(),
+                    ])
+                    // ->requiresConfirmation()
                     ->visible(fn (JoinSchoolRequest $record) => $record->status == null),
 
                 Action::make("refuse")

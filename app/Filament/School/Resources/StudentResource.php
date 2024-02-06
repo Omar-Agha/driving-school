@@ -9,6 +9,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -71,15 +72,28 @@ class StudentResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Action::make("Assign instructor")
+                    ->button()
+                    ->action(function (Student $record, array $data) {
+                        $record->preferred_instructor_id = $data['instructor_id'];
+                        $record->save();
+                    })
+                    ->modalHeading('Change Preferred Instructor')
+                    ->modalDescription('Select an Preferred Instructor')
+
+                    ->form([
+                        Forms\Components\Select::make('instructor_id')
+                            ->label('Instructor')
+                            ->options(school()->instructors->pluck('full_name', 'id'))
+                            ->default(fn (Student $record) => $record->preferred_instructor_id)
+                            ->required(),
+                    ])
+
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\BulkActionGroup::make([]),
             ])
-            ->modifyQueryUsing(fn (Builder $query) => $query->where('school_id'));
+            ->modifyQueryUsing(fn (Builder $query) => $query->where('school_id', school()->id));
     }
 
     public static function getPages(): array

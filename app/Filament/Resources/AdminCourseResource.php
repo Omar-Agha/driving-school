@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Filament\School\Resources;
+namespace App\Filament\Resources;
 
-use App\Filament\School\Resources\SchoolLessonResource\Pages;
-use App\Filament\School\Resources\SchoolLessonResource\RelationManagers;
-use App\Models\SchoolLesson;
+use App\Filament\Resources\AdminCourseResource\Pages;
+use App\Filament\Resources\AdminCourseResource\RelationManagers;
+use App\Models\AdminCourse;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,34 +13,19 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class SchoolLessonResource extends Resource
+class AdminCourseResource extends Resource
 {
-    protected static ?string $model = SchoolLesson::class;
+    protected static ?string $model = AdminCourse::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-
-
-
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Hidden::make('school_id')
-                    ->default(auth()->user()->school->id)
-                    ->required(),
                 Forms\Components\TextInput::make('title')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('price')
-                    ->required()
-                    ->numeric()
-                    ->prefix('$'),
-                Forms\Components\Textarea::make('description')
-                    ->required()
-                    ->maxLength(65535)
-                    ->columnSpanFull(),
             ]);
     }
 
@@ -48,7 +33,6 @@ class SchoolLessonResource extends Resource
     {
         return $table
             ->columns([
-
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -59,15 +43,13 @@ class SchoolLessonResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('title')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('price')
-                    ->money()
-                    ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -75,28 +57,11 @@ class SchoolLessonResource extends Resource
                 ]),
             ]);
     }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
+    
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSchoolLessons::route('/'),
-            // 'create' => Pages\CreateSchoolLesson::route('/create'),
-            // 'edit' => Pages\EditSchoolLesson::route('/{record}/edit'),
+            'index' => Pages\ManageAdminCourses::route('/'),
         ];
-    }
-
-    public static function mutateFormDataBeforeCreate(array $data): array
-    {
-        10 / 0;
-        $data['user_id'] = auth()->id();
-
-        return $data;
-    }
+    }    
 }

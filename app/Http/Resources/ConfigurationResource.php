@@ -34,6 +34,10 @@ class ConfigurationResource extends JsonResource
         $city = '';
         $town = '';
         $student_id = null;
+        $first_name = '';
+        $last_name = '';
+        $post_code = '';
+
 
         if ($this->isStudent()) {
             $school = $this->student->school;
@@ -43,19 +47,26 @@ class ConfigurationResource extends JsonResource
             $city = $this->student->city;
             $town = $this->student->country;
             $student_id = $this->student->id;
+            $first_name = $this->first_name;
+            $last_name = $this->last_name;
+            $post_code = $this->post_code;
         }
 
-        if ($this->isInstructor())
+        if ($this->isInstructor()) {
+
             $school = $this->instructor->school;
+            $first_name = $this->first_name;
+            $last_name = $this->last_name;
+        }
 
 
 
 
 
         return [
-            'first_name' => "dummy",
-            'last_name' => 'dummy',
-            'post_code' => '000',
+            'first_name' => $first_name,
+            'last_name' => $last_name,
+            'post_code' => $post_code,
             'birth_date' => Carbon::now(),
             'userName' => $this->username,
             'email' => $this->email,

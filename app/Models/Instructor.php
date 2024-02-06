@@ -13,7 +13,7 @@ class Instructor extends Model
     use HasFactory;
 
 
-    protected $fillable = ['name', 'date_of_birth', 'avatar','school_id'];
+    protected $fillable = ['name', 'date_of_birth', 'avatar', 'school_id', 'first_name', 'last_name'];
     protected $appends = ['avatar_url'];
 
 
@@ -31,5 +31,10 @@ class Instructor extends Model
     public function school(): BelongsTo
     {
         return $this->BelongsTo(School::class);
+    }
+
+    public function getFullNameAttribute()
+    {
+        return $this->first_name . ' ' . $this->last_name;
     }
 }

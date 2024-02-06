@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminCourseController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ComplimentController;
 use App\Http\Controllers\Controller;
@@ -67,6 +68,8 @@ Route::prefix('student')->middleware(['auth:sanctum', 'banned'])->group(function
     Route::get("next-appointment", [StudentController::class, "getStudentNextAppointment"])->name("student.get-student-next-appointments")->middleware('role:student');
     Route::post("cancel-appointment/{appointment}", [StudentController::class, "cancelAppointment"])->name("student.cancel-student-appointments")->middleware('role:student');
     Route::post("update-account", [StudentController::class, "updateAccount"])->name("student.update-account")->middleware('role:student');
+    Route::get("preferred-instructor", [StudentController::class, "getPreferredInstructor"])->name("student.get-request-join-school")->middleware('role:student');
+
 });
 
 Route::prefix('questions-to-do')->middleware(['auth:sanctum', 'banned'])->group(function () {
@@ -85,14 +88,16 @@ Route::prefix('progress-items')->middleware(['auth:sanctum', 'banned'])->group(f
     Route::get("progress-items-for-student/{type}", [ProgressItemController::class, "getProgressItemsForStudent"])->name("student.progress-items")->middleware('role:student');
     Route::get("progress-items-groups-for-student", [ProgressItemController::class, "getProgressItemsGroupForStudent"])->name("student.progress-items-group")->middleware('role:student');
     Route::post("rate-student", [ProgressItemController::class, "rateStudent"])->middleware('role:instructor');
+});
 
-
+Route::prefix('admin-course')->middleware(['auth:sanctum', 'banned'])->group(function () {
+    Route::get("", [AdminCourseController::class, "all"]);
 });
 
 
 
 Route::prefix('compliment')->middleware(['auth:sanctum', 'banned'])->group(function () {
-    
+
     Route::post("", [ComplimentController::class, "create"]);
 });
 

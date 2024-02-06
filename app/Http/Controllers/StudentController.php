@@ -16,20 +16,26 @@ use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
+
+    function getPreferredInstructor()
+    {
+        return $this->sendSuccess(student()->preferredInstructor);
+    }
+
     public function requestJoinSchool()
     {
 
-        request()->validate(['code' => 'required']);
+        request()->validate(['code' => 'required', 'course_id' => 'required|exists:admin_courses,id']);
         $code = request('code');
         /** @var Student */
         $student = auth()->user()->student;
         $school = School::whereCode($code)->first();
-        if ($school == null) return abort(404, 'invalid School code');
-        if ($school->id == $student->school_id) abort(400, 'student is already in the school');
+        if ($school == null) return $this->sendError('invalid school code');
+        if ($school->id == $student->school_id) return $this->sendError('student is already in a school');
         $joinRequest = JoinSchoolRequest::whereSchoolId($school->id)->whereStudentId($student->id)->whereNull('status')->first();
 
-        if ($joinRequest != null) abort(400, 'you already sent request');
-        $request = $student->requestJoinSchool($school->id, $student->id);
+        if ($joinRequest != null) return $this->sendError('you have already sent a requests');
+        $request = $student->requestJoinSchool($school->id, $student->id, request('course_id'));
 
         return DefaultResource::make($request);
     }
@@ -145,6 +151,4 @@ class StudentController extends Controller
 
         return DefaultResource::make(['message' => $student]);
     }
-
-    
 }

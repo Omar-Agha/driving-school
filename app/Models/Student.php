@@ -54,11 +54,12 @@ class Student extends Model
 
 
 
-    public function requestJoinSchool(int $school_id, int $student_id): JoinSchoolRequest
+    public function requestJoinSchool(int $school_id, int $student_id, int $course_id): JoinSchoolRequest
     {
         return JoinSchoolRequest::create([
             'school_id' => $school_id,
-            'student_id' => $student_id
+            'student_id' => $student_id,
+            'admin_course_id' => $course_id
         ]);
     }
 

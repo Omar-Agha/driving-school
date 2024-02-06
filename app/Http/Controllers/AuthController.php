@@ -52,7 +52,8 @@ class AuthController extends Controller
             'token' => $user->createToken("Customer Token")->plainTextToken,
             'email' => $user->email
         ];
-        return DefaultResource::make($response);
+        // return DefaultResource::make($response);
+        return $this->sendSuccess($response);
     }
 
 
@@ -123,7 +124,8 @@ class AuthController extends Controller
         $user->forceFill(['password' => Hash::make(request('password'))])->save();
         $record->delete();
 
-        return DefaultResource::make(['message' => 'ok']);
+        // return DefaultResource::make(['message' => 'ok']);
+        return $this->sendSuccess(['message' => 'ok']);
     }
 
     public function verifyForgetCode()
@@ -140,6 +142,7 @@ class AuthController extends Controller
 
 
         return DefaultResource::make(['success' => $flag]);
+        return $this->sendSuccess(['success' => $flag]);
     }
 
 
@@ -159,8 +162,8 @@ class AuthController extends Controller
 
 
         $user->forceFill(['password' => Hash::make(request('new_password'))])->save();
-        return $this->sendSuccess([], "Success");
-        return DefaultResource::make(['success' => true]);
+        return $this->sendSuccess(['success'=>true], "Success");
+        
     }
 
     //forgetPassword
