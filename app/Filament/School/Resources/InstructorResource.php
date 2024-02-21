@@ -6,6 +6,7 @@ use App\Enums\UserRoleEnum;
 use App\Filament\School\Resources\InstructorResource\Pages;
 use App\Filament\School\Resources\InstructorResource\Pages\EditInstructor;
 use App\Filament\School\Resources\InstructorResource\RelationManagers;
+use App\Filament\School\Resources\InstructorWorkTimeResource\Pages\ManageInstructorWorkTimes;
 use App\Models\Instructor;
 use Filament\Forms;
 use Filament\Forms\Components\Card;
@@ -14,6 +15,7 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
 use Phpsa\FilamentPasswordReveal\Password;
 
@@ -111,6 +113,8 @@ class InstructorResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Action::make("Manage Work")
+                    ->url(fn (Instructor $record) => route('filament.school.resources.instructor-work-times.instructor-list',['instructor'=>$record->id]))
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -127,7 +131,7 @@ class InstructorResource extends Resource
     }
 
     public static function getPages(): array
-    {
+    {;
         return [
             'index' => Pages\ListInstructors::route('/'),
             'create' => Pages\CreateInstructor::route('/create'),

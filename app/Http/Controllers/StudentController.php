@@ -6,6 +6,7 @@ use App\Http\Resources\DefaultResource;
 
 use App\Http\Resources\JoinSchoolRequestResource;
 use App\Models\Event;
+use App\Models\InstructorWorkTime;
 use App\Models\JoinSchoolRequest;
 use App\Models\ProgressItem;
 use App\Models\School;
@@ -150,5 +151,55 @@ class StudentController extends Controller
         $student->update(request()->all());
 
         return DefaultResource::make(['message' => $student]);
+    }
+
+
+    public function getPreferredInstructorWorkTime()
+    {
+        request()->validate(['year' => 'int|required', 'month' => 'int|required']);
+        $student = student();
+        $instructor_id = $student->preferred_instructor_id;
+        $school_id = $student->school_id;
+
+        $start_date = Carbon::create(request('year'), request('month'));
+        $end_date = $start_date->copy()->addMonth();
+
+
+        //get all month dates (from 1 to 31)
+        $available_dates = collect();
+        for ($date = $start_date->copy(); $date < $end_date; $date->addDay()) {
+            $available_dates->add($date->copy());
+        }
+
+
+        //get instructor work & break time
+        $instructor_time =  InstructorWorkTime::where('instructor_id', $instructor_id)->where('school_id', $school_id)->get();
+        $work_time = collect($instructor_time)->filter(fn ($row) => !$row->is_break);
+        $break_time = collect($instructor_time)->filter(fn ($row) => $row->is_break);
+
+
+        //remove date that instructor doesn't work in it
+        foreach ($available_dates as $date) {
+            $day_number = $date->dayOfWeek;
+            //if day_number is not exists in $work_time table then remove it fro available 
+            if (!$work_time->contains(fn (InstructorWorkTime $x) => $x->day == $day_number)) {
+
+                $available_dates = $available_dates->filter(fn (Carbon $x) => $x->notEqualTo($date))->flatten();
+            }
+        }
+
+
+        //fill available time  
+        $available_time = collect();
+        foreach ($available_dates as $date) {
+            $day_number = $date->dayOfWeek;
+            $available_time[$date->format("Y-m-d")] = collect($work_time->where(fn (InstructorWorkTime $x) => $x->day == $day_number))->transform(fn ($x) => ['from' => $x->start, 'to' => $x->end]);
+        }
+
+        return [
+            'available' => $available_dates->map(fn (Carbon $date) => $date->format('Y-m-d')),
+            "available_time" => $available_time
+
+        ];
     }
 }

@@ -69,6 +69,7 @@ Route::prefix('student')->middleware(['auth:sanctum', 'banned'])->group(function
     Route::post("cancel-appointment/{appointment}", [StudentController::class, "cancelAppointment"])->name("student.cancel-student-appointments")->middleware('role:student');
     Route::post("update-account", [StudentController::class, "updateAccount"])->name("student.update-account")->middleware('role:student');
     Route::get("preferred-instructor", [StudentController::class, "getPreferredInstructor"])->name("student.get-request-join-school")->middleware('role:student');
+    Route::get("preferred-instructor-work-time", [StudentController::class, "getPreferredInstructorWorkTime"])->middleware('role:student');
 
 });
 
@@ -77,6 +78,9 @@ Route::prefix('questions-to-do')->middleware(['auth:sanctum', 'banned'])->group(
     Route::post("questions", [QuestionToDoController::class, "getQuestion"])->name("question_to_do.questions");
     Route::post("answer/{question}", [QuestionToDoController::class, "answerQuestion"])->name("question_to_do.answer-question");
 });
+
+
+
 
 
 Route::prefix('instructor')->middleware(['auth:sanctum', 'banned'])->group(function () {
