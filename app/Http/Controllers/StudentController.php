@@ -192,7 +192,7 @@ class StudentController extends Controller
         $available_time = collect();
         foreach ($available_dates as $date) {
             $day_number = $date->dayOfWeek;
-            $available_time[$date->format("Y-m-d")] = collect($work_time->where(fn (InstructorWorkTime $x) => $x->day == $day_number))->transform(fn ($x) => ['from' => $x->start, 'to' => $x->end]);
+            $available_time[$date->format("Y-m-d")] = collect($work_time->where(fn (InstructorWorkTime $x) => $x->day == $day_number)->flatten())->transform(fn ($x) => ['from' => $x->start, 'to' => $x->end]);
         }
 
         return [
