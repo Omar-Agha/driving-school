@@ -174,8 +174,8 @@ class StudentController extends Controller
 
         //get instructor work & break time
         $instructor_time =  InstructorWorkTime::where('instructor_id', $instructor_id)->where('school_id', $school_id)->get();
-        $work_time = collect($instructor_time)->filter(fn ($row) => !$row->is_break);
-        $break_time = collect($instructor_time)->filter(fn ($row) => $row->is_break);
+        $work_time = collect($instructor_time)->filter(fn ($row) => !$row->is_break)->flatten();
+        $break_time = collect($instructor_time)->filter(fn ($row) => $row->is_break)->flatten();
 
 
         //remove date that instructor doesn't work in it
