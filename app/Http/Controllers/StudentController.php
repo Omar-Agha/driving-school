@@ -198,7 +198,7 @@ class StudentController extends Controller
 
         return [
             'available' => $available_dates->map(fn (Carbon $date) => $date->format('Y-m-d')),
-            "available_time" => $available_time
+            "available_time" => $available_time->flatten()
 
         ];
     }
