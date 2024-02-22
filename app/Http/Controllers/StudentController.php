@@ -189,7 +189,6 @@ class StudentController extends Controller
         }
 
 
-        //fill available time  
         $available_time = collect();
         foreach ($available_dates as $date) {
             $day_number = $date->dayOfWeek;
@@ -198,7 +197,7 @@ class StudentController extends Controller
 
         return [
             'available' => $available_dates->map(fn (Carbon $date) => $date->format('Y-m-d')),
-            "available_time" => $available_time->flatten()
+            "available_time" => $available_time->flatten(1)
 
         ];
     }
