@@ -14,6 +14,7 @@ use App\Models\Student;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
 {
@@ -200,5 +201,45 @@ class StudentController extends Controller
             "available_time" => $available_time
 
         ];
+    }
+
+
+    function ReserveAppointment()
+    {
+
+        request()->validate([
+            'car_type' => ['required', Rule::in(['manual', 'automatic'])],
+            'location' => ['required'],
+            'start' => ["required", "date"],
+            'duration' => ['required', 'int']
+
+
+        ]);
+        $start = now();
+        $end = $start->copy()->addHours(request('duration'));
+
+
+        $name = "I dont know";
+        $vehicle_id = 1;
+        $school_lesson_id = 4;
+        $car_type = request('car_type');
+        $location = request('location');
+        $student = student();
+        $instructor = $student->preferredInstructor;
+
+        return $this->sendSuccess(
+            Event::create([
+                'start' => $start,
+                'end' => $end,
+                'name' => $name,
+                'student_id' => $student->id,
+                'vehicle_id' => $vehicle_id,
+                'instructor_id' => $instructor->id,
+                'school_lesson_id' => $school_lesson_id,
+                'car_type' => $car_type,
+                'location_text' => $location,
+                'limit_time_to_cancel' => 24
+            ])
+        );
     }
 }

@@ -70,6 +70,8 @@ Route::prefix('student')->middleware(['auth:sanctum', 'banned'])->group(function
     Route::post("update-account", [StudentController::class, "updateAccount"])->name("student.update-account")->middleware('role:student');
     Route::get("preferred-instructor", [StudentController::class, "getPreferredInstructor"])->name("student.get-request-join-school")->middleware('role:student');
     Route::get("preferred-instructor-work-time", [StudentController::class, "getPreferredInstructorWorkTime"])->middleware('role:student');
+    Route::post("reserve-appointment", [StudentController::class, "ReserveAppointment"])->middleware('role:student');
+
 
 });
 
