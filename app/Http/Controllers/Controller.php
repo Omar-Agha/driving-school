@@ -13,6 +13,9 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Http\Response;
+use Laravel\Cashier\Plan\Contracts\PlanRepository;
+use Mollie\Api\Resources\Customer;
+use Mollie\Laravel\Facades\Mollie;
 
 class Controller extends BaseController
 {
@@ -65,57 +68,79 @@ class Controller extends BaseController
 
     public function test()
     {
-        $instructor_id = 1;
-        $school_id = 1;
+        $payments = Mollie::api()->payments()->page();
+        return $payments;
 
-        $start_date = Carbon::create(2024, 1); //from request
-        $end_date = $start_date->copy()->addMonth();
+        // foreach ($payments as $payment) {
+        //     Mollie::api()->payments()->delete($payment->id);
+        // }
+        // return Mollie::api()->payments()->page();
 
-        $available_dates = collect();
+        $payment = Mollie::api()->payments()->create([
+            'amount' => [
+                'value' => '20.00',
+                'currency' => 'EUR'
+            ],
+            'description' => "by some course",
+            'redirectUrl' => route('cc')
+        ]);
+        return Mollie::api()->payments()->get($payment->id);
+        dd($payment);
+        $user = User::find(1);
+        return $user->findInvoice(2);
+        // $stripePriceId = 'price_deluxe_album';
 
-        for ($date = $start_date->copy(); $date < $end_date; $date->addDay()) {
-            $available_dates->add($date->copy());
-        }
+        // $quantity = 1;
+
+        // return $user->checkout([$stripePriceId => $quantity], []);
+        // $user->newSubscription('basic_plan', 'monthly')
+        $user->newSubscription('main', 'main')
+            // ->trialDays(10)
+            // ->withCoupon('MADRID2019')
+            ->create();
+        return $user;
+    }
+
+    public function createPayment()
+    {
 
 
-        // return ;
+        $payment = Mollie::api()->payments()->create([
+            'amount' => [
+                'value' => '20.00',
+                'currency' => 'EUR'
+            ],
+            'description' => "by some course",
+            'redirectUrl' => route('cc')
+        ]);
 
-        // return $available_dates;
-
-        $instructor_time =  InstructorWorkTime::where('instructor_id', $instructor_id)->where('school_id', $school_id)->get();
-        $work_time = collect($instructor_time)->filter(fn ($row) => !$row->is_break);
-        $break_time = collect($instructor_time)->filter(fn ($row) => $row->is_break);
-
-
-        //remove date that doesnot has work time record for that date
-        foreach ($available_dates as $date) {
-            $day_number = $date->dayOfWeek;
-            //if day_number is not exists in $work_time table then remove it fro available 
-            if (!$work_time->contains(fn (InstructorWorkTime $x) => $x->day == $day_number)) {
-
-                $available_dates = $available_dates->filter(fn (Carbon $x) => $x->notEqualTo($date))->flatten();
-            }
-        }
-
-        
-        $available_time = collect();
-        foreach ($available_dates as $date) {
-            $day_number = $date->dayOfWeek;
-
-            if ($work_time->where(fn (InstructorWorkTime $x) => $x->day == $day_number)) {
-            }
-            $available_time[$date->format("Y-m-d")] = collect($work_time->where(fn (InstructorWorkTime $x) => $x->day == $day_number))->transform(fn ($x) => ['from' => $x->start, 'to' => $x->end]);
-        }
-
-        return [
-            'available' => $available_dates->map(fn (Carbon $date) => $date->format('Y-m-d')),
-            "available_time" => $available_time
-
+        // return json_encode($payment);
+        return  [
+            'getMobileAppCheckoutUrl' => $payment->getMobileAppCheckoutUrl(),
+            'id' => $payment->id,
+            'links' => $payment->_links,
+            'amount' => $payment->amount,
+            'status' => $payment->status
         ];
-        return Student::with('preferredInstructor')->get();
-        return school();
-        return $this->sendError("Error my");
+    }
 
-        return $this->sendSuccess(User::all(), "data", Response::HTTP_BAD_GATEWAY);
+    public function getPayments()
+    {
+        $payments = collect(Mollie::api()->payments()->page());
+        return $payments;
+        $payments = Mollie::api()->payments()->iterator();
+
+
+        $payments = Mollie::api()->customerPayments()->createForId('cst_8822Lvra6H', [
+            'amount' => [
+                'value' => '20.00',
+                'currency' => 'EUR'
+            ],
+            'description' => "by some course",
+            'redirectUrl' => route('cc')
+        ]);
+
+
+        return $payments;
     }
 }

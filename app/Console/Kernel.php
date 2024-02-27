@@ -13,6 +13,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->command('cashier:run')
+            ->hourly() // run as often as you like (daily, monthly, every minute, ...)
+            ->withoutOverlapping(); // make sure to include this
     }
 
     /**
@@ -20,7 +23,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands(): void
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

@@ -10,11 +10,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Cashier\Billable;
+use Laravel\Cashier\Order\Contracts\ProvidesInvoiceInformation;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable implements HasName
+class User extends Authenticatable implements HasName, ProvidesInvoiceInformation
 {
     use HasApiTokens, HasFactory, Notifiable;
+
+    use Billable;
 
     /**
      * The attributes that are mass assignable.
@@ -145,5 +149,30 @@ class User extends Authenticatable implements HasName
     {
         $this->is_suspended = false;
         $this->save();
+    }
+
+
+    public function mollieCustomerFields()
+    {
+        return [
+            'email' => $this->email,
+            'name' => $this->username,
+        ];
+    }
+
+
+    public function getInvoiceInformation()
+    {
+        return [$this->username, $this->email];
+    }
+
+    /**
+     * Get additional information to be displayed on the invoice. Typically a note provided by the customer.
+     *
+     * @return string|null
+     */
+    public function getExtraBillingInformation()
+    {
+        return null;
     }
 }

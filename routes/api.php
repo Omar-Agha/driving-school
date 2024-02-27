@@ -71,8 +71,6 @@ Route::prefix('student')->middleware(['auth:sanctum', 'banned'])->group(function
     Route::get("preferred-instructor", [StudentController::class, "getPreferredInstructor"])->name("student.get-request-join-school")->middleware('role:student');
     Route::get("preferred-instructor-work-time", [StudentController::class, "getPreferredInstructorWorkTime"])->middleware('role:student');
     Route::post("reserve-appointment", [StudentController::class, "ReserveAppointment"])->middleware('role:student');
-
-
 });
 
 Route::prefix('questions-to-do')->middleware(['auth:sanctum', 'banned'])->group(function () {
@@ -82,6 +80,14 @@ Route::prefix('questions-to-do')->middleware(['auth:sanctum', 'banned'])->group(
 });
 
 
+
+Route::get("success", function () {
+    return "ggg";
+})->name("cc");
+
+Route::get("get-payments", [Controller::class, 'getPayments']);
+
+Route::post("create-payment", [Controller::class, 'createPayment']);
 
 
 
